@@ -1,0 +1,145 @@
+<template>
+  <div>
+    <siteHeader menu="新建项目" toPageName="返回主页" to="/"></siteHeader>
+    <el-main>
+      <el-row>
+        <el-col
+          class="border"
+          :xs="{span: 24, offset: 0}"
+          :sm="{span: 18, offset: 3}"
+          :md="{span: 14, offset: 5}"
+          :lg="{span: 10, offset: 7}"
+          :xl="{span: 8, offset: 8}"
+        >
+          <el-form
+            :model="model"
+            :rules="rules"
+            ref="rules"
+            status-icon
+            label-width="100px"
+            class="demo-ruleForm"
+            label-position="left"
+          >
+            <el-form-item label="项目名称" prop="projectkName">
+              <el-input v-model="model.projectkName" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="项目地址" prop="projectAddress">
+              <el-input v-model="model.projectAddress" clearable></el-input>
+            </el-form-item>
+            <div id="container"></div>
+            <el-form-item label="结构类型" prop="type">
+              <el-input v-model="model.type" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="申请说明" prop="aim">
+              <el-input
+                v-model="model.aim"
+                clearable
+                type="textarea"
+                rows="5"
+                maxlength="100"
+                show-word-limit
+              ></el-input>
+            </el-form-item>
+            <el-form-item size="large">
+              <el-button type="primary" @click="(createProject('rules'))">立即创建</el-button>
+            </el-form-item>
+          </el-form>
+          <p style="color:#909399;font-size:14px;">
+            *注意：以上输入项只是项目的部分必须信息，诸如数据导入等更多的
+            <strong>&nbsp;设置&nbsp;</strong>需要进一步完善！当您的项目审核通过后,您可以在&nbsp;
+            <strong>主页</strong>=>
+            <strong>我的项目</strong>=>
+            <strong>详情</strong>=>
+            <strong>项目管理</strong>&nbsp;页面进行详细配置、进行更多操作。
+          </p>
+        </el-col>
+      </el-row>
+    </el-main>
+    <siteFooter></siteFooter>
+  </div>
+</template>
+
+<style scoped>
+.border {
+  border: 1px solid #dcdfe6;
+  border-radius: 5px;
+  padding: 30px;
+}
+@media screen and (max-width: 769px){
+  .border{
+    border: none;
+    box-shadow: none;
+  }
+}
+</style>>
+
+<script>
+export default {
+  data() {
+    return {
+      model: {
+        projectkName: "",
+        projectAddress: "",
+        aim: "",
+        type: ""
+      },
+      rules: {
+        projectkName: [
+          { required: true, message: "请输入项目名称", trigger: "blur" },
+          {
+            min: 3,
+            max: 20,
+            message: "长度在 3 到 20 个字符",
+            trigger: "change"
+          }
+        ],
+        projectAddress: [
+          { required: true, message: "请输入项目所在地", trigger: "blur" },
+          {
+            min: 6,
+            max: 50,
+            message: "长度在 6 到 50 个字符",
+            trigger: "change"
+          }
+        ],
+        aim: [
+          {
+            required: true,
+            message: "请输入申请理由，用于审核",
+            trigger: "blur"
+          },
+          {
+            min: 10,
+            max: 100,
+            message: "长度在 10 到 100 个字符",
+            trigger: "change"
+          }
+        ],
+        type: [
+          { required: true, message: "请输入结构类型", trigger: "blur" },
+          {
+            min: 2,
+            max: 30,
+            message: "长度在 2 到 30 个字符",
+            trigger: "change"
+          }
+        ]
+      }
+    };
+  },
+  methods: {
+    getVerificationCode() {
+      alert("获取验证码");
+    },
+    createProject(rules) {
+      this.$refs[rules].validate(valid => {
+        if (valid) {
+          alert("submit!");
+        } else {
+          return false;
+        }
+      });
+    }
+  }
+};
+</script>
