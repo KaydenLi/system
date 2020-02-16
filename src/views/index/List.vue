@@ -1,6 +1,6 @@
 <template>
   <div>
-    <siteHeader menu="开放列表" toPageName="返回主页" to="/"></siteHeader>
+    <siteHeader :header="header"></siteHeader>
     <el-main>
       <div class="list-holder">
         <p>
@@ -101,6 +101,7 @@
 export default {
   data() {
     return {
+      header: { menu: "开放列表", toPageName: "返回主页", to: "/" },
       serchContent: "",
       searchType: "",
       project: [

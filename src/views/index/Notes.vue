@@ -1,6 +1,6 @@
 <template>
   <div>
-    <siteHeader menu="通知公告" toPageName="返回首页" to="/index"></siteHeader>
+    <siteHeader :header="header"></siteHeader>
     <el-main>
       <el-row>
         <el-col
@@ -39,6 +39,7 @@
 export default {
   data() {
     return {
+      header: { menu: "通知公告", toPageName: "返回首页", to: "/index" },
       notes: [
         {
           _id: "1",

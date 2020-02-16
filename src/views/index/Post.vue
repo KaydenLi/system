@@ -1,6 +1,6 @@
 <template>
   <div>
-    <siteHeader menu="通告详情" toPageName="返回通告" to="/notes"></siteHeader>
+    <siteHeader :header="header"></siteHeader>
     <el-main>
       <el-row>
         <el-col
@@ -10,7 +10,7 @@
           :lg="{span: 10, offset: 7}"
           :xl="{span: 8, offset: 8}"
         >
-          <div class="block"></div>
+          <div class="block">post</div>
         </el-col>
       </el-row>
     </el-main>
@@ -21,7 +21,9 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      header: { menu: "通告详情", toPageName: "返回通告", to: "/notes" }
+    };
   },
   methods: {
     toList() {

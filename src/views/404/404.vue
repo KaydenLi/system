@@ -1,6 +1,6 @@
 <template>
   <div>
-    <siteHeader menu="页面不存在" toPageName="返回首页" to="/index"></siteHeader>
+    <siteHeader :header="header"></siteHeader>
     <el-main>
       <el-row>
         <el-col
@@ -26,6 +26,11 @@
 export default {
   data() {
     return {
+      header: {
+        menu: "页面不存在",
+        toPageName: "返回首页",
+        to: "/index"
+      },
       url: ""
     };
   },

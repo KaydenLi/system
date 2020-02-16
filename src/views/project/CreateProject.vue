@@ -1,6 +1,6 @@
 <template>
   <div>
-    <siteHeader menu="新建项目" toPageName="返回主页" to="/"></siteHeader>
+    <siteHeader :header="header"></siteHeader>
     <el-main>
       <el-row>
         <el-col
@@ -65,8 +65,8 @@
   border-radius: 5px;
   padding: 30px;
 }
-@media screen and (max-width: 769px){
-  .border{
+@media screen and (max-width: 769px) {
+  .border {
     border: none;
     box-shadow: none;
   }
@@ -77,6 +77,11 @@
 export default {
   data() {
     return {
+      header: {
+        menu: "新建项目",
+        toPageName: "返回主页",
+        to: "/"
+      },
       model: {
         projectkName: "",
         projectAddress: "",

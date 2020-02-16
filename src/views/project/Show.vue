@@ -1,6 +1,6 @@
 <template>
   <div>
-    <siteHeader menu="查看详情" toPageName="返回主页" to="/"></siteHeader>
+    <siteHeader :header="header"></siteHeader>
     <el-main>
       <el-row>
         <el-col
@@ -28,6 +28,7 @@
 export default {
   data() {
     return {
+      header: { menu: "查看详情", toPageName: "返回主页", to: "/" },
       project: {
         projectName: "测试",
         _id: "111",

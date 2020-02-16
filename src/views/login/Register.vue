@@ -1,6 +1,6 @@
 <template>
   <div>
-    <siteHeader menu="忘记密码" toPageName="去登陆" to="/login"></siteHeader>
+    <siteHeader :header="header"></siteHeader>
     <el-main>
       <el-row>
         <el-col
@@ -20,6 +20,15 @@
             class="demo-ruleForm"
             label-position="left"
           >
+            <el-form-item label="姓名" prop="nickName">
+              <el-input v-model="model.nickName" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="userPassword">
+              <el-input v-model="model.userPassword" clearable type="password"></el-input>
+            </el-form-item>
+            <el-form-item label="确认密码" prop="acknowledgement">
+              <el-input v-model="model.acknowledgement" clearable type="password"></el-input>
+            </el-form-item>
             <el-form-item label="电话号码" prop="phone">
               <el-input v-model="model.phone" clearable></el-input>
             </el-form-item>
@@ -28,14 +37,8 @@
                 <el-button slot="append" @click="getVerificationCode">发送验证码</el-button>
               </el-input>
             </el-form-item>
-            <el-form-item label="新密码" prop="userPassword">
-              <el-input v-model="model.userPassword" clearable type="password"></el-input>
-            </el-form-item>
-            <el-form-item label="确认密码" prop="acknowledgement">
-              <el-input v-model="model.acknowledgement" clearable type="password"></el-input>
-            </el-form-item>
             <el-form-item size="large">
-              <el-button type="primary" @click="(changePassword('rules'))">更改</el-button>
+              <el-button type="primary" @click="(createUser('rules'))">创建</el-button>
               <el-button @click="cancelCreate">取消</el-button>
             </el-form-item>
           </el-form>
@@ -71,13 +74,19 @@ export default {
       }
     };
     return {
+      header: { menu: "注册账号", toPageName: "去登陆", to: "/login" },
       model: {
+        nickName: "",
         userPassword: "",
         acknowledgement: "",
         phone: "",
         verificationCode: ""
       },
       rules: {
+        nickName: [
+          { required: true, message: "请输入昵称", trigger: "blur" },
+          { min: 3, max: 50, message: "长度在 3 到 50 个字符", trigger: "blur" }
+        ],
         userPassword: [
           { required: true, message: "请输入密码", trigger: "blur" },
           { min: 6, max: 50, message: "长度在 6 到 50 个字符", trigger: "blur" }
@@ -99,9 +108,9 @@ export default {
   },
   methods: {
     getVerificationCode() {
-      alert("验证码已发送");
+      alert("获取验证码");
     },
-    changePassword(rules) {
+    createUser(rules) {
       this.$refs[rules].validate(valid => {
         if (valid) {
           alert("submit!");
@@ -113,7 +122,7 @@ export default {
     },
     cancelCreate() {
       this.$message({
-        message: "已取消修改密码!",
+        message: "已取消创建用户!",
         type: "info",
         center: true
       });

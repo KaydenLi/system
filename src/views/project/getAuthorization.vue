@@ -1,6 +1,6 @@
 <template>
   <div>
-    <siteHeader menu="获取授权" toPageName="返回列表" to="/list"></siteHeader>
+    <siteHeader :header="header"></siteHeader>
     <el-main>
       <el-row>
         <el-col
@@ -28,6 +28,7 @@
 export default {
   data() {
     return {
+      header: { menu: "获取授权", toPageName: "返回列表", to: "/list" },
       project: {
         projectName: "测试",
         _id: "111",
