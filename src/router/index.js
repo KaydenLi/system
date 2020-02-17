@@ -53,6 +53,12 @@ const routes = [
     meta: { isPublic: true },
   },
   {
+    //其他页面路由到404页面
+    path: "/404",
+    name: "404",
+    component: () => import('../views/404/404.vue')
+  },
+  {
     path: '/',
     name: 'home',
     component: () => import('../views/home/Home.vue'),

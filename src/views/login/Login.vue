@@ -47,22 +47,22 @@
 
 <style scoped>
 .box-card {
-    width: 25rem;
-    margin: 6rem auto;
-  }
-  .box-content {
-    margin-top: 20px;
-    padding: 0;
-  }
-  .login-header {
-    text-align: center;
-  }
-  .login-header span {
-    font-size: 1.5em;
-  }
-  .centerBtn {
-    text-align: center;
-  }
+  width: 25rem;
+  margin: 6rem auto;
+}
+.box-content {
+  margin-top: 20px;
+  padding: 0;
+}
+.login-header {
+  text-align: center;
+}
+.login-header span {
+  font-size: 1.5em;
+}
+.centerBtn {
+  text-align: center;
+}
 @media screen and (max-width: 769px) {
   .box-card {
     padding-top: 100px;
@@ -78,7 +78,6 @@
     box-shadow: none;
   }
 }
-
 </style>
 
 <script>
@@ -137,6 +136,8 @@ export default {
         });
         return;
       }
+      // const userInfo = await this.$http.post('login',this.model);
+      //todo
       this.$message({
         message: "登录成功!",
         type: "success",
