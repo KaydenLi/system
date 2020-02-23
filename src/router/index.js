@@ -60,7 +60,6 @@ const routes = [
   },
   {
     path: '/',
-    name: 'home',
     component: () => import('../views/home/Home.vue'),
     children: [
       {
@@ -70,6 +69,12 @@ const routes = [
         component: () => import('../views/home/Root.vue')
       },
       {
+        //用户中心页面
+        path: 'center/:id',
+        name: 'center',
+        component: () => import('../views/home/EditInfo.vue')
+      },
+      {
         //创建项目页面
         path: 'createProjects',
         name: 'createProjects',
@@ -77,7 +82,6 @@ const routes = [
       },
       {
         path: 'project/:id/',
-        name: 'detail',
         component: () => import('../views/project/Detail.vue'),
         children: [
           {
