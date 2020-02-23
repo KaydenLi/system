@@ -20,7 +20,7 @@
             class="demo-ruleForm"
             label-position="left"
           >
-            <el-form-item label="姓名" prop="nickName">
+            <el-form-item label="用户名" prop="nickName">
               <el-input v-model="model.nickName" clearable></el-input>
             </el-form-item>
             <el-form-item label="密码" prop="userPassword">
