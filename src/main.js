@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './plugins/element.js'
+import 'default-passive-events'
 
 //注册header和footer两个全局组件
 import includedHeader from './components/Header.vue'
