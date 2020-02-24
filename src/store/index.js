@@ -5,9 +5,10 @@ import actions from './actions.js'
 import getters from './getters.js'
 
 Vue.use(Vuex)
-const state = { 
+const state = {
     userInfo: null, //用户信息
- }
+    authAboutProjects: null
+}
 
 export default new Vuex.Store({
     strict: process.env.NODE_ENV !== 'production',

@@ -4,5 +4,8 @@ export default {
     },
     closeWelcome(state) {
         state.userInfo.welcomeFlag = false;
+    },
+    initAuthAboutProjects(state, projects) {
+        state.authAboutProjects = projects;
     }
 }

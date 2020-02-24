@@ -9,7 +9,7 @@ export default {
     email: "kaydenli@qq.com",
     projectsCount: 0,
     viewablesCount: 0,
-    avatar:"https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+    avatar: "https://note.youdao.com/yws/api/image/normal/1415113498685?userId=sina1835613694",
     projects: [{
         projectName: "测试1",
         date: "2019-09-09",
@@ -39,17 +39,5 @@ export default {
         date: "2019-09-09",
         address: "wuhan",
         _id: "5"
-    }],
-    viewables: [{
-        projectName: "测试",
-        date: "2019-09-09",
-        address: "wuhan",
-        _id: "111"
-    }, {
-        projectName: "测试",
-        date: "2019-09-09",
-        address: "wuhan",
-        _id: "222"
-    }
-    ],
+    }]
 }

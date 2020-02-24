@@ -81,6 +81,9 @@
 </style>
 
 <script>
+//mockdata
+import userInfo from "../../mockData/userInfo";
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -100,6 +103,7 @@ export default {
     };
   },
   methods: {
+    ...mapMutations(["initUserInfo"]),
     checkUserName() {
       if (!/^1[3456789]\d{9}$/.test(this.model.userName.value)) {
         this.userIcon = "el-icon-circle-close";
@@ -137,7 +141,7 @@ export default {
         return;
       }
       // const userInfo = await this.$http.post('login',this.model);
-      //todo
+      this.initUserInfo(userInfo);
       this.$message({
         message: "登录成功!",
         type: "success",

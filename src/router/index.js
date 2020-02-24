@@ -70,9 +70,27 @@ const routes = [
       },
       {
         //用户中心页面
-        path: 'center/:id',
+        path: 'center',
         name: 'center',
         component: () => import('../views/home/EditInfo.vue')
+      },
+      {
+        //申请历史页面
+        path: 'history',
+        name: 'history',
+        component: () => import('../views/home/History.vue')
+      },
+      {
+        //申请历史页面
+        path: 'application/:id',
+        name: 'application',
+        component: () => import('../views/home/Application.vue')
+      },
+      {
+        //项目授权页面
+        path: 'auth/:id',
+        name: 'auth',
+        component: () => import('../views/home/Auth.vue')
       },
       {
         //创建项目页面
