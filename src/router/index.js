@@ -88,9 +88,15 @@ const routes = [
       },
       {
         //项目授权页面
-        path: 'auth/:id',
+        path: 'auth',
         name: 'auth',
         component: () => import('../views/home/Auth.vue')
+      },
+      {
+        //项目授权页面
+        path: 'auth/:id',
+        name: 'authDetail',
+        component: () => import('../views/home/AuthDetail.vue')
       },
       {
         //创建项目页面
