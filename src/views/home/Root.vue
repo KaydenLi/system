@@ -230,7 +230,7 @@ export default {
       openHeader: {
         title: "开放项目列表 ",
         todo: "我的开放",
-        url: "/list",
+        url: "/myopen",
         icon: "el-icon-tickets",
         hasQuestion: false
       },

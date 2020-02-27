@@ -9,7 +9,7 @@ const routes = [
     path: '/index',
     name: 'index',
     component: () => import('../views/index/Index.vue'),
-    meta: { isPublic: true },
+    meta: { isPublic: true }
   },
   {
     //通知公告页面
@@ -23,13 +23,7 @@ const routes = [
     path: '/notes/:id',
     name: 'post',
     component: () => import('../views/index/Post.vue'),
-    meta: { isPublic: true },
-  },
-  {
-    //开放列表页面
-    path: '/list',
-    name: 'list',
-    component: () => import('../views/index/List.vue'),
+    meta: { isPublic: true }
   },
   {
     //注册页面
@@ -50,13 +44,14 @@ const routes = [
     path: '/login',
     name: 'login',
     component: () => import('../views/login/Login.vue'),
-    meta: { isPublic: true },
+    meta: { isPublic: true }
   },
   {
     //其他页面路由到404页面
     path: "/404",
     name: "404",
-    component: () => import('../views/404/404.vue')
+    component: () => import('../views/404/404.vue'),
+    meta: { isPublic: true }
   },
   {
     path: '/',
@@ -81,10 +76,16 @@ const routes = [
         component: () => import('../views/home/History.vue')
       },
       {
-        //申请历史页面
+        //申请页面
         path: 'application/:id',
         name: 'application',
         component: () => import('../views/home/Application.vue')
+      },
+      {
+        //开放列表页面
+        path: 'list',
+        name: 'list',
+        component: () => import('../views/index/List.vue'),
       },
       {
         //项目授权页面
@@ -93,10 +94,15 @@ const routes = [
         component: () => import('../views/home/Auth.vue')
       },
       {
-        //项目授权页面
+        //项目授权详情页面
         path: 'auth/:id',
         name: 'authDetail',
         component: () => import('../views/home/AuthDetail.vue')
+      },
+      {
+        path: 'myopen',
+        name: "myopen",
+        component: () => import('../views/home/myOpenList.vue')
       },
       {
         //创建项目页面
@@ -161,5 +167,18 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+//使用路由守卫，对需要用户权限的页面进行登录操作
+router.beforeEach((to, from, next) => {
+  if (!to.meta.isPublic && !localStorage.token) {
+    Vue.prototype.$message({
+      type: 'error',
+      message: '请先登录'
+    })
+    return next('/login')
+  }
+  next()
+})
+
 
 export default router

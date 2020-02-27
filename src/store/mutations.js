@@ -7,5 +7,8 @@ export default {
     },
     initAuthAboutProjects(state, projects) {
         state.authAboutProjects = projects;
+    },
+    initPosts(state, posts) {
+        state.posts = posts;
     }
 }

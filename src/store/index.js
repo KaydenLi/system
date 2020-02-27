@@ -7,7 +7,8 @@ import getters from './getters.js'
 Vue.use(Vuex)
 const state = {
     userInfo: null, //用户信息
-    authAboutProjects: null
+    authAboutProjects: null,
+    posts:[]
 }
 
 export default new Vuex.Store({
