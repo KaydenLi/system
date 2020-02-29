@@ -2,7 +2,7 @@
   <el-container>
     <el-header>
       <div class="nav">
-        <span class="logo">结构三维可视化检测系统</span>
+        <span class="logo">结构三维可视化监测系统</span>
         <el-link href="/login" type="primary" :underline="false" class="float-right">
           <i class="el-icon-switch-button"></i>&nbsp;登录/注册
         </el-link>
@@ -122,8 +122,12 @@ export default {
   font-size: 20px;
   color: #303133;
 }
+.block {
+  height: 300px;
+  text-align: center;
+}
 .banner-img {
-  width: 100%;
+  /* width: 100%; */
   height: 100%;
 }
 .placeholder {
@@ -164,6 +168,7 @@ export default {
   background-color: #d3dce6;
 }
 .section-header {
+  margin-top: 10px;
   padding: 7px 0;
   border-bottom: 1px solid #e4e7ed;
   font-size: 18px;
