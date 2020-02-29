@@ -5,7 +5,7 @@
       <div class="list-holder">
         <p>
           请使用&nbsp;
-          <strong>电脑</strong>&nbsp;打开本页面，以获取更好的浏览体验。
+          <strong>大屏设备</strong>&nbsp;打开本页面，以获取更好的浏览体验。
         </p>
       </div>
       <div class="open-list">
