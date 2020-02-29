@@ -70,6 +70,12 @@ const routes = [
         component: () => import('../views/home/EditInfo.vue')
       },
       {
+        //查看用户页面
+        path:'user/:id/show',
+        name:'user',
+        component:()=>import('../views/home/UserShow.vue')
+      },
+      {
         //申请历史页面
         path: 'history',
         name: 'history',
