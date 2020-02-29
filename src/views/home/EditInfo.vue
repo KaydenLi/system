@@ -142,7 +142,6 @@ export default {
     },
     handleAvatarSuccess() {
       this.$message.info(`头像上传成功`);
-      window.console.log(this.model.file);
     }
   },
   mounted() {
