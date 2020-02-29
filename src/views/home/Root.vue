@@ -29,9 +29,12 @@
               class="el-icon-close colse-btn"
             ></i>
           </div>
-          <el-tabs type="border-card" value="first" style="min-height:450px;">
+          <el-tabs type="border-card" :value="activeTab" style="min-height:450px;">
             <!-- 我的项目标签页 -->
-            <el-tab-pane label="我的项目" name="first">
+            <el-tab-pane name="first">
+              <span slot="label" @click="setActiveTab(`first`)">
+                <i class="el-icon-house"></i> 我的项目
+              </span>
               <Header :header="projectsHeader"></Header>
               <el-table stripe :data="userInfo.projects" :empty-text="emptyText.myprojects">
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
@@ -50,9 +53,17 @@
             </el-tab-pane>
 
             <!-- 开放项目标签页 -->
-            <el-tab-pane label="开放项目" name="second">
+            <el-tab-pane name="second">
+              <span slot="label" @click="setActiveTab(`second`);getApplicationProject()">
+                <i class="el-icon-sold-out"></i> 开放项目
+              </span>
               <Header :header="requestHeader"></Header>
-              <el-table stripe :data="authAboutProjects.toCheck" :empty-text="emptyText.requests">
+              <el-table
+                stripe
+                :data="applicationProjects.toQuest"
+                :empty-text="emptyText.requests"
+                v-loading="loading.applicationLoading"
+              >
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column
                   v-for="item in toAuthTable"
@@ -71,7 +82,12 @@
                 </el-table-column>
               </el-table>
               <Header :header="viewableHeader" class="top-margin"></Header>
-              <el-table stripe :data="authAboutProjects.toCheck" :empty-text="emptyText.viewables">
+              <el-table
+                stripe
+                :data="applicationProjects.getAuthed"
+                :empty-text="emptyText.viewables"
+                v-loading="loading.applicationLoading"
+              >
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column
                   v-for="item in viewablesTable"
@@ -92,9 +108,17 @@
             </el-tab-pane>
 
             <!-- 授权项目标签页 -->
-            <el-tab-pane label="授权项目" name="third">
+            <el-tab-pane name="third">
+              <span slot="label" @click="setActiveTab(`third`);getAuthProject()">
+                <i class="el-icon-sell"></i> 授权项目
+              </span>
               <Header :header="openRequestHeader"></Header>
-              <el-table stripe :data="authAboutProjects.toCheck" :empty-text="emptyText.checks">
+              <el-table
+                stripe
+                :data="authProjects.toCheck"
+                :empty-text="emptyText.checks"
+                v-loading="loading.authLoading"
+              >
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column
                   v-for="item in authTable"
@@ -109,7 +133,12 @@
                 </el-table-column>
               </el-table>
               <Header :header="openHeader" class="top-margin"></Header>
-              <el-table stripe :data="authAboutProjects.toCheck" :empty-text="emptyText.opens">
+              <el-table
+                stripe
+                :data="authProjects.getChecked"
+                :empty-text="emptyText.opens"
+                v-loading="loading.authLoading"
+              >
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column
                   v-for="item in authedTable"
@@ -126,7 +155,10 @@
             </el-tab-pane>
 
             <!-- 用户中心标签页 -->
-            <el-tab-pane label="用户中心" name="fourth">
+            <el-tab-pane name="fourth">
+              <span slot="label" @click="setActiveTab(`fourth`)">
+                <i class="el-icon-user"></i> 用户中心
+              </span>
               <Header :header="centerHeader"></Header>
               <User :userInfo="userInfo"></User>
             </el-tab-pane>
@@ -146,7 +178,8 @@ import { mapState, mapMutations } from "vuex";
 import Header from "../../components/HeaderinTab.vue";
 import User from "../../components/User.vue";
 //mockData
-import authAboutProjects from "../../mockData/authAboutProjects.js";
+import authProjectsData from "../../mockData/authProjects.js";
+import applicationProjectsData from "../../mockData/applicationProjects.js";
 export default {
   data() {
     return {
@@ -241,6 +274,10 @@ export default {
         url: "/center",
         icon: "el-icon-user",
         hasQuestion: false
+      },
+      loading: {
+        applicationLoading: false,
+        authLoading: false
       }
     };
   },
@@ -249,10 +286,23 @@ export default {
     User
   },
   computed: {
-    ...mapState(["userInfo", "loadingFlags", "authAboutProjects"])
+    ...mapState([
+      "userInfo",
+      "loadingFlags",
+      "authProjects",
+      "applicationProjects",
+      "activeTab"
+    ])
   },
   methods: {
-    ...mapMutations(["initAuthAboutProjects", "changeLoading"]),
+    ...mapMutations([
+      "initAuthAboutProjects",
+      "initApplicationAboutProjects",
+      "changeLoading",
+      "setActiveTab",
+      "setAuthStatus",
+      "setApplicationStatus"
+    ]),
     toDetail(id) {
       this.$router.push(`/project/${id}/index`);
     },
@@ -274,9 +324,32 @@ export default {
     closeWelcom() {
       this.$store.commit("closeWelcome");
     },
-    init() {
-      this.initAuthAboutProjects(authAboutProjects);
-    }
+    getApplicationProject() {
+      if (this.applicationProjects.updated) {
+        return;
+      }
+      this.loading.applicationLoading = true;
+      setTimeout(() => {
+        this.initApplicationAboutProjects(applicationProjectsData);
+        this.loading.applicationLoading = false;
+        this.setApplicationStatus();
+        //TODO:用axios获取数据，并进行初始化
+        return;
+      }, 1000);
+    },
+    getAuthProject() {
+      if (this.authProjects.updated) {
+        return;
+      }
+      this.loading.authLoading = true;
+      setTimeout(() => {
+        this.initAuthAboutProjects(authProjectsData);
+        this.loading.authLoading = false;
+        this.setAuthStatus();
+        //TODO:用axios获取数据，并进行初始化
+      }, 1000);
+    },
+    init() {}
   },
   created() {
     this.init();
