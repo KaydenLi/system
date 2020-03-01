@@ -1,0 +1,9 @@
+.border {
+    border: 1px solid #dcdfe6;
+    border-radius: 5px;
+    padding: 30px;
+    @media screen and (max-width: 769px) {
+      border: none;
+      box-shadow: none;
+    }
+}
