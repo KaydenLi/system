@@ -1,0 +1,26 @@
+.set-min-height {
+    min-height: 75vh;
+    .info-icon {
+      color: #909399;
+    }
+    .danger-icon {
+      color: #f56c6c;
+    }
+    .success-icon {
+      color: #67c23a;
+    }
+    .item-header {
+      color: #909399;
+      .link,
+      .deco {
+        color: #409eff;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+    .no-data {
+      color: #909399;
+      text-align: center;
+    }
+}
