@@ -50,26 +50,26 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .set-height {
   min-height: 75vh;
-}
-.only-small-screen {
-  display: none;
-}
-@media screen and (max-width: 769px) {
   .only-small-screen {
-    display: block;
-  }
-  .only-large-screen {
     display: none;
+    @media screen and (max-width: 769px) {
+      display: block;
+    }
   }
-  .set-height {
-    text-align: center;
-    color: #909399;
-  }
-  .set-height div {
-    margin-top: 5em;
+  @media screen and (max-width: 769px) {
+    .only-large-screen {
+      display: none;
+    }
+    .set-height {
+      text-align: center;
+      color: #909399;
+      div {
+        margin-top: 5em;
+      }
+    }
   }
 }
 </style>

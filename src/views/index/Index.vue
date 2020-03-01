@@ -28,7 +28,7 @@
             <span>
               <i class="el-icon-microphone"></i>&nbsp;公告通知
             </span>
-            <el-button @click="toAllNotes" type="text" style="float:right;font-size:14px;">
+            <el-button @click="toAllNotes" type="text" class="all-notes">
               所有公告
               <i class="el-icon-position"></i>
             </el-button>
@@ -112,65 +112,57 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .nav {
   height: 4em;
   line-height: 4em;
   border-bottom: 1px solid #e4e7ed;
-}
-.logo {
-  font-size: 20px;
-  color: #303133;
+  .logo {
+    font-size: 20px;
+    color: #303133;
+  }
+  .float-right {
+    float: right;
+    font-size: 14px;
+  }
 }
 .block {
   height: 300px;
   text-align: center;
-}
-.banner-img {
-  /* width: 100%; */
-  height: 100%;
-}
-.placeholder {
-  color: #99a9bf;
-  font-size: 14px;
-}
-.float-right {
-  float: right;
-  font-size: 14px;
-}
-.el-carousel__item h3 {
-  color: #475669;
-  font-size: 14px;
-  opacity: 0.75;
-  line-height: 200px;
-  margin: 0;
-}
-.note {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.note-link {
-  padding: 0;
-  color: #606266;
-}
-.note-link:hover {
-  color: #409eff;
-}
-.box-card {
-  margin-bottom: 2em;
-}
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
-}
-
-.el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
+  .banner-img {
+    height: 100%;
+  }
 }
 .section-header {
   margin-top: 10px;
   padding: 7px 0;
   border-bottom: 1px solid #e4e7ed;
   font-size: 18px;
+  .all-notes {
+    float: right;
+    font-size: 14px;
+  }
+}
+.note {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  .note-link {
+    padding: 0;
+    color: #606266;
+    &:hover {
+      color: #409eff;
+    }
+  }
+}
+.placeholder {
+  color: #99a9bf;
+  font-size: 14px;
+}
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
 }
 </style>

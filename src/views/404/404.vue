@@ -11,14 +11,14 @@
           :xl="{span: 8, offset: 8}"
         >
           <div class="block">
-            <div style="font-size:50px;color:#F56C6C;">4 0 4</div>
+            <div class="not-found">4 0 4</div>
             <p>你要查看的页面"{{url}}"不存在</p>
             <el-button type="text" @click="toIndex">返回首页</el-button>
           </div>
         </el-col>
       </el-row>
     </el-main>
-    <siteFooter style="margin-top:100px;"></siteFooter>
+    <siteFooter class="footer"></siteFooter>
   </div>
 </template>
 
@@ -45,14 +45,16 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .block {
   margin: 100px 0;
   text-align: center;
+  .not-found {
+    font-size: 50px;
+    color: #f56c6c;
+  }
 }
-.box-card {
-  margin: 0;
-  padding: 0;
-  border: none;
+.footer {
+  margin-top: 100px;
 }
 </style>

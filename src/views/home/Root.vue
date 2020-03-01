@@ -13,7 +13,7 @@
       </div>
     </el-header>
 
-    <el-main style="width:100%;min-height:100vh;">
+    <el-main class="main-content">
       <el-row>
         <el-col
           :xs="{span: 24, offset: 0}"
@@ -357,49 +357,48 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .nav {
   height: 4em;
   line-height: 4em;
   border-bottom: 1px solid #e4e7ed;
-}
-.logo {
-  font-size: 20px;
-  color: #303133;
-}
-.float-right {
-  float: right;
-  font-size: 14px;
-}
-.top-margin {
-  margin-top: 80px;
-}
-.welcome {
-  font-size: 14px;
-  margin: 0 0 20px;
-  height: 3em;
-  line-height: 3em;
-  text-align: center;
-  border: 1px solid rgb(228, 248, 219);
-  color: #67c23a;
-  border-radius: 5px;
-  background-color: rgb(228, 248, 219);
-}
-@media screen and (max-width: 769px) {
-  .welcome {
-    display: none;
+  .logo {
+    font-size: 20px;
+    color: #303133;
+  }
+  .float-right {
+    float: right;
+    font-size: 14px;
   }
 }
-.colse-btn:hover {
-  cursor: pointer;
-  color: #fff;
-  background-color: #67c23a;
-  border-radius: 50%;
-}
-.box-card {
-  margin-bottom: 20px;
-}
-.closeIt {
-  display: none;
+
+.main-content {
+  width: 100%;
+  min-height: 100vh;
+  .welcome {
+    font-size: 14px;
+    margin: 0 0 20px;
+    height: 3em;
+    line-height: 3em;
+    text-align: center;
+    border: 1px solid rgb(228, 248, 219);
+    color: #67c23a;
+    border-radius: 5px;
+    background-color: rgb(228, 248, 219);
+    @media screen and (max-width: 769px) {
+      display: none;
+    }
+    .colse-btn {
+      &:hover {
+        cursor: pointer;
+        color: #fff;
+        background-color: #67c23a;
+        border-radius: 50%;
+      }
+    }
+  }
+  .top-margin {
+    margin-top: 80px;
+  }
 }
 </style>

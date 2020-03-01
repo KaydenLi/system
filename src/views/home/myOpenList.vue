@@ -16,5 +16,5 @@ export default {
 };
 </script>
 
-<style>
+<style lang="acss" scoped>
 </style>

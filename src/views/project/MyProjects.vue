@@ -73,31 +73,33 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .el-menu-vertical-demo {
   border: none;
 }
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 400px;
-  height: 300px;
-  line-height: 300px;
-  text-align: center;
-}
-.avatar {
-  width: 400px;
-  height: 300px;
-  display: block;
+.avatar-uploader {
+  .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    &:hover {
+      border-color: #409eff;
+    }
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 400px;
+    height: 300px;
+    line-height: 300px;
+    text-align: center;
+  }
+  .avatar {
+    width: 400px;
+    height: 300px;
+    display: block;
+  }
 }
 </style>

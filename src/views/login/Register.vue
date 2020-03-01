@@ -48,17 +48,8 @@
   </div>
 </template>
 
-<style scoped>
-.border {
-  border: 1px solid #dcdfe6;
-  border-radius: 5px;
-  padding: 30px;
-}
-@media screen and (max-width: 767px) {
-  .border {
-    border: none;
-  }
-}
+<style lang="scss" scoped>
+@import "../../assets/styles/box-border.scss";
 </style>>
 
 <script>

@@ -70,28 +70,21 @@
   </div>
 </template>
 
-<style scoped>
-.box-card {
-  margin: 0;
-  padding: 0;
-  border: none;
+<style lang="scss" scoped>
+.list-holder {
+  margin: 20px 0;
+  display: block;
+  color: #c0c4cc;
+  text-align: center;
+  @media screen and (min-width: 769px) {
+    display: none;
+  }
 }
 .el-input .el-select {
   width: 8em;
 }
 @media screen and (max-width: 769px) {
   .open-list {
-    display: none;
-  }
-  .list-holder {
-    margin: 20px 0;
-    display: block;
-    color: #c0c4cc;
-    text-align: center;
-  }
-}
-@media screen and (min-width: 768px) {
-  .list-holder {
     display: none;
   }
 }

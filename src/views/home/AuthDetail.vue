@@ -74,7 +74,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .title {
   color: #909399;
 }

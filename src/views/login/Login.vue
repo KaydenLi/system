@@ -59,26 +59,11 @@
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .box-card {
   width: 25em;
   margin: 3em auto;
-}
-.box-content {
-  margin-top: 20px;
-  padding: 0;
-}
-.login-header {
-  text-align: center;
-}
-.login-header span {
-  font-size: 1.5em;
-}
-.centerBtn {
-  text-align: center;
-}
-@media screen and (max-width: 769px) {
-  .box-card {
+  @media screen and (max-width: 769px) {
     padding-top: 50px;
     width: 100%;
     height: 100%;
@@ -89,8 +74,21 @@
   .box-content {
     margin-top: 20px;
     padding: 0;
-    border: none;
-    box-shadow: none;
+    @media screen and (max-width: 769px) {
+      margin-top: 20px;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+    }
+    .centerBtn {
+      text-align: center;
+    }
+  }
+  .login-header {
+    text-align: center;
+    span {
+      font-size: 1.5em;
+    }
   }
 }
 </style>

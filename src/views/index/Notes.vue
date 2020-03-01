@@ -59,13 +59,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .block {
   margin-bottom: 100px;
-}
-.box-card {
-  margin: 0;
-  padding: 0;
-  border: none;
 }
 </style>

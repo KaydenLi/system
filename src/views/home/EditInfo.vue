@@ -154,43 +154,43 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .border {
   border: 1px solid #dcdfe6;
   border-radius: 5px;
   padding: 30px;
-}
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 100px;
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
-}
-.avatar {
-  width: 100px;
-  height: 100px;
-  display: block;
-}
-@media screen and (max-width: 769px) {
-  .border {
+  @media screen and (max-width: 769px) {
     border: none;
     box-shadow: none;
+    .demo-ruleForm {
+      margin: 0;
+      padding: 0;
+    }
   }
-  .demo-ruleForm {
-    margin: 0;
-    padding: 0;
+  .avatar-uploader {
+    .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      &:hover {
+        border-color: #409eff;
+      }
+    }
+    .avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 100px;
+      height: 100px;
+      line-height: 100px;
+      text-align: center;
+    }
+    .avatar {
+      width: 100px;
+      height: 100px;
+      display: block;
+    }
   }
 }
 </style>

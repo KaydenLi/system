@@ -129,30 +129,5 @@ export default {
 </script>
 
 <style scoped>
-.set-min-height {
-  min-height: 75vh;
-}
-.item-header {
-  color: #909399;
-}
-.info-icon {
-  color: #909399;
-}
-.danger-icon {
-  color: #f56c6c;
-}
-.success-icon {
-  color: #67c23a;
-}
-.link,
-.deco {
-  color: #409eff;
-}
-.link:hover {
-  cursor: pointer;
-}
-.no-data {
-  color: #909399;
-  text-align: center;
-}
+@import "../../assets/styles/item.scss";
 </style>
