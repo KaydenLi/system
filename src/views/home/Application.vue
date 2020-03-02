@@ -12,15 +12,15 @@
         >
           <p>
             <span class="title">项目名称：</span>
-            {{quest.projectName}}
+            <span @click="checkProject(quest.project_id)" class="link">{{quest.projectName}}</span>
+          </p>
+          <p>
+            <span class="title">所有者：</span>
+            <span @click="checkUser(quest.project_id)" class="link">{{quest.userName}}</span>
           </p>
           <p>
             <span class="title">项目地址：</span>
             {{quest.address}}
-          </p>
-          <p>
-            <span class="title">所有者：</span>
-            {{quest.userName}}
           </p>
           <p>
             <span class="title">申请日期：</span>
@@ -58,8 +58,33 @@ export default {
     };
   },
   methods: {
+    checkUser(id) {
+      this.$router.push(`/user/${id}/show`);
+    },
+    checkProject(id) {
+      this.$router.push(`/project/${id}/show`);
+    },
     cancelQuest(id) {
-      alert("取消" + id);
+      //TODO:数据库操作
+      window.console.log("接受" + id);
+      this.$confirm("确定取消该申请吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "已取消该申请!"
+          });
+          this.$router.push(`/`);
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
     }
   },
   created() {
@@ -71,5 +96,12 @@ export default {
 <style lang="scss" scoped>
 .title {
   color: #909399;
+  font-weight: 300;
+}
+.link {
+  color: #409eff;
+  &:hover {
+    cursor: pointer;
+  }
 }
 </style>

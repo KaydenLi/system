@@ -12,11 +12,11 @@
         >
           <p>
             <span class="title">申请者：</span>
-            {{auth.userName}}
+            <span @click="checkUser(auth.project_id)" class="link">{{auth.userName}}</span>
           </p>
           <p>
             <span class="title">项目名称：</span>
-            {{auth.projectName}}
+            <span @click="checkProject(auth.project_id)" class="link">{{auth.projectName}}</span>
           </p>
           <p>
             <span class="title">项目地址：</span>
@@ -64,11 +64,53 @@ export default {
     };
   },
   methods: {
+    checkUser(id) {
+      this.$router.push(`/user/${id}/show`);
+    },
+    checkProject(id) {
+      this.$router.push(`/project/${id}`);
+    },
     cancelQuest(id) {
-      alert("拒绝" + id);
+      window.console.log("拒绝" + id);
+      this.$confirm("确定拒绝该申请吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "已拒绝该申请!"
+          });
+          this.$router.push("/");
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
     },
     acquireQuest(id) {
-      alert("同意" + id);
+      window.console.log("拒绝" + id);
+      this.$confirm("确定同意该申请吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "已同意该申请!"
+          });
+          this.$router.push("/");
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
     }
   }
 };
@@ -77,5 +119,12 @@ export default {
 <style lang="scss" scoped>
 .title {
   color: #909399;
+  font-weight: 300;
+}
+.link {
+  color: #409eff;
+  &:hover {
+    cursor: pointer;
+  }
 }
 </style>

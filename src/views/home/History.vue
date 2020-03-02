@@ -113,11 +113,45 @@ export default {
     },
     cancelQuest(id) {
       //TODO:数据库操作
-      alert("取消" + id);
+      window.console.log("接受" + id);
+      this.$confirm("确定取消该申请吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "已取消该申请!"
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
     },
     deleteItem(id) {
       //TODO:数据库操作
-      alert("删除" + id);
+      window.console.log("接受" + id);
+      this.$confirm("确定删除该申请吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "已删除该申请!"
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
     }
   },
   created() {

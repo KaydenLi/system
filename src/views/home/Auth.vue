@@ -21,7 +21,7 @@
               </template>
               <p>
                 <span class="item-header">申请账号：</span>
-                <span @click="chekUser(item.user_id)" class="link">{{item.userName}}</span>
+                <span @click="checkUser(item.user_id)" class="link">{{item.userName}}</span>
               </p>
               <p>
                 <span class="item-header">项目名称：</span>
@@ -73,7 +73,8 @@
                 {{item.description}}
               </p>
               <p v-if="item.status==='waitting'">
-                <el-button type="danger" size="mini" @click="cancelQuest(item._id)">取消申请</el-button>
+                <el-button type="primary" size="mini" @click="acquireQuest(item._id)">同意申请</el-button>
+                <el-button type="danger" size="mini" @click="refuseQuest(item._id)">拒绝申请</el-button>
               </p>
               <p v-if="item.status==='success'">
                 <el-button type="danger" size="mini" @click="deleteItem(item._id)">删除记录</el-button>
@@ -101,19 +102,74 @@ export default {
     };
   },
   methods: {
-    chekUser(id) {
+    checkUser(id) {
       this.$router.push(`/user/${id}/show`);
     },
     checkProject(id) {
       this.$router.push(`/project/${id}`);
     },
-    cancelQuest(id) {
+    acquireQuest(id) {
       //TODO:数据库操作
-      alert("取消" + id);
+      window.console.log("接受" + id);
+      this.$confirm("确定接受该申请吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "已同意该申请!"
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
+    },
+    refuseQuest(id) {
+      //TODO:数据库操作
+      window.console.log("接受" + id);
+      this.$confirm("确定拒绝该申请吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "已拒绝该申请!"
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
     },
     deleteItem(id) {
       //TODO:数据库操作
-      alert("删除" + id);
+      window.console.log("接受" + id);
+      this.$confirm("确定删除该记录吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "已删除记录!"
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
     }
   },
   created() {
