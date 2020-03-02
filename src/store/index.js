@@ -1,40 +1,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import persistedState from 'vuex-persistedstate'
 import mutations from './mutations.js'
 import actions from './actions.js'
 import getters from './getters.js'
 
 Vue.use(Vuex)
 const state = {
-    userInfo: { //用户信息
-        _id: "",
-        adminFlag: false,
-        loginStatus: false,
-        welcomeFlag: true,
-        userName: "user",
-        address: "cn",
-        phone: "157********",
-        email: "********@**.com",
-        projectsCount: 0,
-        viewablesCount: 0,
-        avatar: "",
-        projects: []
-    },
-    authProjects: {
-        _id: "",
-        userName: "",
-        getChecked: [],
-        toCheck: [],
-        updated: false
-    },
-    applicationProjects: {
-        _id: "",
-        userName: "",
-        getCheckedAuthed: [],
-        toQuest: [],
-        updated: false
-    },
-    posts: [],
+    userInfo: null,//用户信息
+    authProjects: null,//授权项目
+    applicationProjects: null,//申请项目
+    posts: [],//首页通告列表
     activeTab: "first"
 }
 
@@ -43,5 +19,8 @@ export default new Vuex.Store({
     state,
     getters,
     actions,
-    mutations
+    mutations,
+    plugins: [
+        persistedState({ storage: window.sessionStorage })
+    ]
 })
