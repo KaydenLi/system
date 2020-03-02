@@ -1,0 +1,8 @@
+export const INIT_USER_INFO
+export const CLOSE_WELCOME
+export const INIT_AUTH_ABOUT_PROJECTS
+export const INIT_AUTH_APPLICATION_PROJECTS
+export const INIT_POST
+export const SET_ACTIVE_TAB
+export const SET_AUTH_STATUS
+export const SET_AAPLICATION_STATUS
