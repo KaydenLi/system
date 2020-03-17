@@ -20,7 +20,7 @@
                 <el-form-item>
                   <el-input
                     id="user"
-                    v-model="model.userName.value"
+                    v-model="model.phone"
                     placeholder="输入手机号"
                     autocomplete="off"
                     :suffix-icon="userIcon"
@@ -31,7 +31,7 @@
                   <el-input
                     id="password"
                     :type="inputType"
-                    v-model="model.password.value"
+                    v-model="model.password"
                     autocomplete="off"
                     placeholder="输入密码"
                   >
@@ -94,22 +94,14 @@
 </style>
 
 <script>
-//mockdata
-import userInfo from "../../mockData/userInfo";
 import { mapMutations } from "vuex";
 export default {
   data() {
     return {
       header: { menu: "登录", toPageName: "取消登录", to: "/index" },
       model: {
-        userName: {
-          type: Number,
-          value: "13456789000"
-        },
-        password: {
-          type: String,
-          value: "123456"
-        }
+        phone: "15752084956",
+        password: "12345678"
       },
       userIcon: "el-icon-loading",
       passwordIcon: "el-icon-loading",
@@ -119,7 +111,7 @@ export default {
   methods: {
     ...mapMutations(["initUserInfo"]),
     checkUserName() {
-      if (!/^1[3456789]\d{9}$/.test(this.model.userName.value)) {
+      if (!/^1[3456789]\d{9}$/.test(this.model.phone)) {
         this.userIcon = "el-icon-circle-close";
       } else {
         this.userIcon = "el-icon-circle-check";
@@ -139,14 +131,14 @@ export default {
       this.$router.push("/forget");
     },
     Login() {
-      if (!this.model.userName.value) {
+      if (!this.model.phone) {
         this.$message({
           message: "账号不能为空!",
           type: "error"
         });
         return;
       }
-      if (!this.model.password.value) {
+      if (!this.model.password) {
         this.$message({
           message: "请输入密码!",
           type: "error",
@@ -154,20 +146,20 @@ export default {
         });
         return;
       }
-      // const userInfo = await this.$http.post('login',this.model);
-      this.initUserInfo(userInfo);
-      this.$message({
-        message: "登录成功!",
-        type: "success",
-        center: true
+      var loginForm = {};
+      loginForm.phone = this.model.phone;
+      loginForm.password = this.model.password;
+      this.$http.post("user/login", this.model).then(res => {
+        localStorage.token = res.data.token;
+        this.$message({
+          message: "登录成功!",
+          type: "success",
+          center: true
+        });
+        this.$router.push("/");
       });
-      this.$router.push("/");
     }
   },
-  created() {
-    if (this.model.userName.value) {
-      this.checkUserName();
-    }
-  }
+  created() {}
 };
 </script>

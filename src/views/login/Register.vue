@@ -19,6 +19,7 @@
             label-width="100px"
             class="demo-ruleForm"
             label-position="left"
+            @submit.native.prevent="createUser('rules')"
           >
             <el-form-item label="用户名" prop="nickName">
               <el-input v-model="model.nickName" clearable></el-input>
@@ -38,7 +39,7 @@
               </el-input>
             </el-form-item>
             <el-form-item size="large">
-              <el-button type="primary" @click="(createUser('rules'))">创建</el-button>
+              <el-button type="primary" native-type="submit">创建</el-button>
               <el-button @click="cancelCreate">取消</el-button>
             </el-form-item>
           </el-form>
@@ -67,11 +68,11 @@ export default {
     return {
       header: { menu: "注册账号", toPageName: "去登陆", to: "/login" },
       model: {
-        nickName: "",
-        userPassword: "",
-        acknowledgement: "",
-        phone: "",
-        verificationCode: ""
+        nickName: "kaydenli",
+        userPassword: "12345678",
+        acknowledgement: "12345678",
+        phone: "15752084956",
+        verificationCode: "1234"
       },
       rules: {
         nickName: [
@@ -104,10 +105,33 @@ export default {
     createUser(rules) {
       this.$refs[rules].validate(valid => {
         if (valid) {
-          alert("submit!");
-          //TODO:路由到登录页面
+          var date = new Date();
+          var year = date.getFullYear();
+          var month = date.getMonth();
+          var day = date.getDate();
+          var hours = date.getHours();
+          var minutes = date.getMinutes();
+          var seconds = date.getSeconds();
+          //初始化用户注册信息
+          var userInfo = {};
+          userInfo.userName = this.model.nickName;
+          userInfo.password = this.model.userPassword;
+          userInfo.phone = this.model.phone;
+          userInfo.createdTime = year + "-" + (month + 1) + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+          //发送创建用户请求
+          this.$http.post("user/create", userInfo).then(res => {
+            let user = res.data;
+            this.$message({
+              message: `成功创建用户 ${user}，请登录!`,
+              type: "success"
+            });
+            this.$router.push("/login");
+          });
         } else {
-          return false;
+          this.$message({
+            message: "创建用户失败，请稍后再试!",
+            type: "info"
+          });
         }
       });
     },

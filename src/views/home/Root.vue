@@ -296,12 +296,12 @@ export default {
   },
   methods: {
     ...mapMutations([
-      "initAuthAboutProjects",
-      "initApplicationAboutProjects",
-      "changeLoading",
-      "setActiveTab",
-      "setAuthStatus",
-      "setApplicationStatus"
+      "INIT_AUTH_ABOUT_PROJECTS",
+      "INIT_APPLICATION_ABOUT_PROJECTS",
+      "CHANGE_LOADING",
+      "SET_ACTIVE_TAB",
+      "SET_AUTH_STATUS",
+      "SET_APPLICATION_STATUS"
     ]),
     toDetail(id) {
       this.$router.push(`/project/${id}/index`);
@@ -330,9 +330,9 @@ export default {
       }
       this.loading.applicationLoading = true;
       setTimeout(() => {
-        this.initApplicationAboutProjects(applicationProjectsData);
+        this.INIT_APPLICATION_ABOUT_PROJECTS(applicationProjectsData);
         this.loading.applicationLoading = false;
-        this.setApplicationStatus();
+        this.SET_APPLICATION_STATUS();
         //TODO:用axios获取数据，并进行初始化
         return;
       }, 1000);
@@ -343,17 +343,14 @@ export default {
       }
       this.loading.authLoading = true;
       setTimeout(() => {
-        this.initAuthAboutProjects(authProjectsData);
+        this.INIT_AUTH_ABOUT_PROJECTS(authProjectsData);
         this.loading.authLoading = false;
-        this.setAuthStatus();
+        this.SET_AUTH_STATUS();
         //TODO:用axios获取数据，并进行初始化
       }, 1000);
-    },
-    init() {}
+    }
   },
-  created() {
-    this.init();
-  }
+  created() {}
 };
 </script>
 
