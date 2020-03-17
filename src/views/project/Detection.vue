@@ -1,5 +1,10 @@
 <template>
-  <div>全景监测</div>
+  <div class="container">
+    <iframe
+      class="screen"
+      src="http://www.thingjs.com/guide/sampleindex.html?m=examples/js/sample_021_DynamicLoad.js"
+    ></iframe>
+  </div>
 </template>
 
 <script>
@@ -12,4 +17,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.container {
+  padding: 0;
+  margin: 0;
+  .screen {
+    box-sizing: content-box;
+    height: 100%;
+    width: 100%;
+  }
+}
 </style>

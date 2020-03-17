@@ -129,7 +129,9 @@ export default {
     createProject(rules) {
       this.$refs[rules].validate(valid => {
         if (valid) {
-          alert("submit!");
+          // this.$http.post("project/create", this.model).then(res => {
+          //   window.console.log(res)
+          // });
         } else {
           return false;
         }
