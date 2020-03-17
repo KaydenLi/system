@@ -26,25 +26,17 @@ Vue.prototype.$http.interceptors.response.use(res => {
   return res;
 }, err => {
   //>=400错误，进行错误处理
-  if (err.response.data.message) {
+  // if (err.response.data.message) {
   //使用$message提示错误信息
   Vue.prototype.$message({
-      type: 'error',
-      message: err.response.data.message
-    })
-  }
+    type: 'error',
+    message: err.response.data.message
+  })
+  // }
   //根据状态码进行处理
   if (err.response.status === 401) {
-  //401，未登录，路由到登录页面
-  router.push('/login')
-  }
-  else if (err.response.status === 404) {
-  //404，页面无效，路由到404页面
-  router.push('/404')
-  }
-  else {
-  //其他情况，跳转首页
-  router.push('/index')
+    //401，未登录，路由到登录页面
+    router.push('/login')
   }
   return Promise.reject(err)
 })
