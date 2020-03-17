@@ -127,10 +127,34 @@ const routes = [
             component: () => import('../views/project/MyProjects.vue')
           },
           {
+            //项目配置页面
+            path: 'config',
+            name: 'config',
+            component: () => import('../views/project/Config.vue')
+          },
+          {
             //具体项目图形可视化页面
             path: 'graphs',
             name: 'graphs',
             component: () => import('../views/project/Graphs.vue')
+          },
+          {
+            //表格数据页面
+            path: 'tables',
+            name: 'tables',
+            component: () => import('../views/project/Table.vue')
+          },
+          {
+            //折线形数据分析页面
+            path: 'lines',
+            name: 'lines',
+            component: () => import('../views/project/Line.vue')
+          },
+          {
+            //其他类型数据页面
+            path: 'important',
+            name: 'important',
+            component: () => import('../views/project/Important.vue')
           },
           {
             //具体项目全景监测页面
@@ -143,6 +167,18 @@ const routes = [
             path: 'estimation',
             name: 'estimation',
             component: () => import('../views/project/Estimation.vue')
+          },
+          {
+            //历史预警记录页面
+            path: 'history',
+            name: 'history',
+            component: () => import('../views/project/History.vue')
+          },
+          {
+            //自定义预警规则页面
+            path: 'rules',
+            name: 'rules',
+            component: () => import('../views/project/Rules.vue')
           }
         ]
       },
@@ -164,7 +200,8 @@ const routes = [
     //其他页面路由到404页面
     path: "*",
     name: "others",
-    component: () => import('../views/404/404.vue')
+    component: () => import('../views/404/404.vue'),
+    meta: { isPublic: true }
   }
 ]
 
