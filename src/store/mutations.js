@@ -1,38 +1,42 @@
-// import {
-//     INIT_USER_INFO,
-//     CLOSE_WELCOME,
-//     INIT_AUTH_ABOUT_PROJECTS,
-//     INIT_AUTH_APPLICATION_PROJECTS,
-//     INIT_POST,
-//     SET_ACTIVE_TAB,
-//     SET_AUTH_STATUS,
-//     SET_AAPLICATION_STATUS
-// } from './mutations-type.js'
+import {
+    INIT_USER_INFO,
+    CLOSE_WELCOME,
+    INIT_AUTH_ABOUT_PROJECTS,
+    INIT_APPLICATION_ABOUT_PROJECTS,
+    INIT_POSTS,
+    SET_ACTIVE_TAB,
+    SET_AUTH_STATUS,
+    SET_APPLICATION_STATUS,
+    TOOGLE_SIDE_BAR
+} from './mutations-type.js'
 
 export default {
-    initUserInfo(state, userinfo) {
+    [INIT_USER_INFO](state, userinfo) {
         state.userInfo = userinfo;
     },
-    closeWelcome(state) {
+    [CLOSE_WELCOME](state) {
         state.userInfo.welcomeFlag = false;
     },
-    initAuthAboutProjects(state, projects) {
+    [INIT_AUTH_ABOUT_PROJECTS](state, projects) {
         state.authProjects = projects;
     },
-    initApplicationAboutProjects(state, projects) {
+    [INIT_APPLICATION_ABOUT_PROJECTS](state, projects) {
         state.applicationProjects = projects;
     },
-    initPosts(state, posts) {
+    [INIT_POSTS](state, posts) {
         state.posts = posts;
     },
-    setActiveTab(state, activeValue) {
+    [SET_ACTIVE_TAB](state, activeValue) {
         state.activeTab = activeValue;
     },
-    setAuthStatus(state, status = true) {
+    [SET_AUTH_STATUS](state, status = true) {
         state.authProjects.updated = status
     },
-    setApplicationStatus(state, status = true) {
+    [SET_APPLICATION_STATUS](state, status = true) {
         state.applicationProjects.updated = status
+    },
+    [TOOGLE_SIDE_BAR](state) {
+        state.toogleSideBar = !state.toogleSideBar;
     }
 
 }
