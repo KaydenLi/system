@@ -78,20 +78,17 @@
 import bannerData from "../../mockData/banners.js";
 import postsData from "../../mockData/notes.js";
 import linkData from "../../mockData/links.js";
-import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
       bannersCount: 5,
       allLinks: [],
-      bannners: []
+      bannners: [],
+      posts: []
     };
   },
-  computed: {
-    ...mapState(["posts"])
-  },
+  computed: {},
   methods: {
-    ...mapMutations(["initPosts"]),
     toLogin() {
       this.$router.push("/login");
     },
@@ -105,7 +102,7 @@ export default {
   },
   created() {
     this.bannersCount = 5;
-    this.initPosts(postsData);
+    this.posts = postsData;
     this.allLinks = linkData;
     this.bannners = bannerData.slice(0, this.bannersCount);
   }

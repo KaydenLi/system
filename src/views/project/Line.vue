@@ -2,30 +2,47 @@
   <div>
     <el-row>
       <el-col :span="3">
-        <span>数据波动查看：</span>
+        <span>曲线查看</span>
       </el-col>
-      <el-col :span="4">
-        <el-select size="mini" @change="getSites" v-model="select.plane" placeholder="选择测区">
+
+      <!-- 按测区-测站-测点查看 -->
+      <el-col :span="4" :offset="1">
+        <el-select
+          size="mini"
+          @change="getSites"
+          multiple
+          collapse-tags
+          v-model="select.plane"
+          placeholder="选择测区"
+        >
           <el-option v-for="plane in planes" :key="plane" :label="plane" :value="plane"></el-option>
         </el-select>
       </el-col>
       <el-col :span="4" :offset="1">
-        <el-select size="mini" v-model="select.site" @change="getPoints" placeholder="选择测站">
+        <el-select
+          size="mini"
+          v-model="select.site"
+          multiple
+          collapse-tags
+          @change="getPoints"
+          placeholder="选择测站"
+        >
           <el-option v-for="site in sites" :key="site" :label="site" :value="site"></el-option>
         </el-select>
       </el-col>
       <el-col :span="4" :offset="1">
-        <el-select size="mini" v-model="select.point" placeholder="选择测点">
+        <el-select size="mini" v-model="select.point" multiple collapse-tags placeholder="选择测点">
           <el-option v-for="point in points" :key="point" :label="point" :value="point"></el-option>
         </el-select>
       </el-col>
-      <el-col :span="4" :offset="1">
+
+      <el-col :span="3" :offset="3">
         <el-button
           type="primary"
           @click="renderPlot(select.plane,select.site,select.point)"
           size="mini"
-        >查看</el-button>
-        <el-button type="info" @click="reSet" size="mini">重置</el-button>
+        >查 看</el-button>
+        <el-button type="info" @click="reset" size="mini">重 置</el-button>
       </el-col>
     </el-row>
     <div class="graph-container">
@@ -45,13 +62,17 @@
 import { planes as allPoints } from "../../mockData/plane.js";
 
 import { Line } from "@antv/g2plot";
+import { initProjectData } from "../../components/mixins/initProjectData.mixin";
 export default {
   data() {
     return {
+      //所有测点
+      allPoints: [],
+      //已选择测区-测站-测点
       select: {
-        plane: "",
-        site: "",
-        point: ""
+        plane: [],
+        site: [],
+        point: []
       },
       planes: [],
       sites: [],
@@ -67,13 +88,19 @@ export default {
         { time: "1 mins ago", value: 9 },
         { time: "0 mins ago", value: 13 }
       ],
+      // 多个图形使用
       containerId: [],
+      // 信息整体
       allInfo: {},
+      allPlanePoints: [],
       oneSitePoints: [],
+      // 一个图形使用
       container: "",
+      // 单个测点详细信息
       oneInfo: {}
     };
   },
+  mixins: [initProjectData],
   computed: {
     showPlaceholder: function() {
       return this.container === "" && this.containerId.length === 0
@@ -90,10 +117,10 @@ export default {
   methods: {
     getSites(val) {
       this.sites = [];
-      this.select.site = "";
-      this.select.point = "";
-      allPoints.forEach(allplane => {
-        if (val !== "" && val === allplane.name) {
+      this.select.site = [];
+      this.select.point = [];
+      this.allPoints.forEach(allplane => {
+        if (val.indexOf(allplane.name) >= 0) {
           allplane.children.forEach(item => {
             this.sites.push(item.name);
           });
@@ -102,11 +129,11 @@ export default {
     },
     getPoints(val) {
       this.points = [];
-      this.select.point = "";
-      allPoints.forEach(allplane => {
-        if (this.select.plane !== "" && this.select.plane === allplane.name) {
+      this.select.point = [];
+      this.allPoints.forEach(allplane => {
+        if (this.select.plane.indexOf(allplane.name) >= 0) {
           allplane.children.forEach(allsite => {
-            if (val !== "" && val === allsite.name) {
+            if (val.indexOf(allsite.name) >= 0) {
               allsite.value.forEach(item => {
                 this.points.push(item.name);
               });
@@ -124,7 +151,7 @@ export default {
         description: {
           visible: true,
           text:
-            "①选择上方的测面（必需项）+测站（必需项）+测点，根据选择结果会显示不同类型图表。\n②其他图表显示时，此示例图表会隐藏。\n③点击下方Slider即可改变显示区域。"
+            "①选择上方的测面（必需项）+ 测站 +测点，根据选择结果会显示不同类型图表。\n②其他图表显示时，此示例图表会隐藏。\n③点击下方Slider即可改变显示时间区域。"
         },
         forceFit: true,
         padding: "auto",
@@ -151,42 +178,98 @@ export default {
 
       linePlot.render();
     },
-    reSet() {
-      (this.select.plane = ""),
-        (this.select.site = ""),
-        (this.select.point = ""),
-        this.$message.success("测区、测站、测点数据已重置。");
+    reset() {
+      this.select.plane = [];
+      this.select.site = [];
+      this.select.point = [];
+      this.sites = [];
+      this.points = [];
+      this.$message.success("测区、测站、测点数据已重置。");
     },
     renderPlot(plane, site, point) {
-      if (plane === "") {
+      if (plane.length === 0) {
         this.$message.error("未选择任何测区！");
-        return;
-      }
-      if (site === "" && point === "") {
-        this.$message.error("未选择任何测站！");
-        return;
-      } else if (site !== "" && point === "") {
+      } else if (site.length === 0 && point.length === 0) {
         this.container = "";
         this.containerId = [];
         this.$nextTick(() => {
-          this.renderAllPoints(plane, site);
+          this.renderOnePlanePoints(plane);
         });
-      } else if (site !== "" && point !== "") {
-        this.renderOnePoints(plane, site, point);
+      } else if (site.length >= 0 && point.length === 0) {
+        this.container = "";
+        this.containerId = [];
+        this.$nextTick(() => {
+          this.renderOneSitePoints(plane, site);
+        });
+      } else if (site.length >= 0 && point.length >= 0) {
+        this.container = "";
+        this.containerId = [];
+        this.$nextTick(() => {
+          this.renderOnePoints(plane, site, point);
+        });
       } else {
         this.$message.error("选择有误，无法绘制图形！");
       }
     },
-    renderAllPoints(plane, site) {
+    renderOnePlanePoints(plane) {
+      this.getBaseInfo();
+      this.allPlanePoints = [];
+      // 生成并获取div#id
+      allPoints.forEach(planes => {
+        if (plane.indexOf(planes.name) >= 0) {
+          planes.children.forEach(sites => {
+            sites.value.forEach(points => {
+              // 获取所有满足所选测区的结点
+              this.allPlanePoints.push({
+                name: points.name,
+                unit: points.unit,
+                type: points.type,
+                value: points.value
+              });
+              if (this.containerId.indexOf(points.type) === -1) {
+                this.containerId.push(points.type);
+              }
+            });
+          });
+        }
+      });
+      // window.console.log(this.allPlanePoints);
+      // 绘制图表到div#id里面
+      this.$nextTick(() => {
+        this.containerId.forEach(id => {
+          let graphData = [];
+          let info = {};
+          info.id = id;
+          info.type = id;
+          this.allPlanePoints.forEach(item => {
+            info.unit = item.unit;
+            if (item.type === id) {
+              let count = 0;
+              item.value.forEach(value => {
+                graphData.unshift({
+                  time:
+                    (parseInt(this.allInfo.timeStamp) * count) / 60 + "分钟前",
+                  type: item.name,
+                  value: value
+                });
+                count++;
+              });
+            }
+          });
+          this.renderOneType(info, graphData);
+        });
+      });
+    },
+    renderOneSitePoints(plane, site) {
+      this.getBaseInfo();
       // 生成并获取div#id
       this.oneSitePoints = [];
       allPoints.forEach(planes => {
-        if (planes.name === plane) {
-          this.allInfo.time = planes.currenttime;
-          this.allInfo.timeStamp = planes.timeStamp;
+        if (plane.indexOf(planes.name) >= 0) {
           planes.children.forEach(sites => {
-            if (sites.name === site) {
+            if (site.indexOf(sites.name) >= 0) {
               sites.value.forEach(points => {
+                // 获取所有满足所选测站的结点
                 this.oneSitePoints.push({
                   name: points.name,
                   unit: points.unit,
@@ -227,9 +310,18 @@ export default {
         });
       });
     },
+    getBaseInfo() {
+      this.allInfo.time = this.allPoints[0].currenttime;
+      this.allInfo.timeStamp = this.allPoints[0].timeStamp;
+    },
     renderOneType(typeInfo, graphData) {
-      let des = `表中值为${typeInfo.type}，数据的采集时间为${this.allInfo.time}，数据单位为${typeInfo.unit}`;
-      let title = `${this.select.plane}--${this.select.site}--${typeInfo.type}实时数据波动显示`;
+      let des = `表中值为${typeInfo.type}，数据的采集时间为${this.allInfo.time}，采集间隔为${this.allInfo.timeStamp}，数据单位为${typeInfo.unit}`;
+      let title = "";
+      if (this.select.site === "") {
+        title = `${this.select.plane}--${typeInfo.type}实时数据波动显示`;
+      } else {
+        title = `${this.select.plane}--${this.select.site}--${typeInfo.type}实时数据波动显示`;
+      }
       const container = document.getElementById(typeInfo.id);
       const linePlot = new Line(container, {
         title: {
@@ -265,19 +357,17 @@ export default {
     },
     //测区+测站+测点
     renderOnePoints(plane, site, point) {
-      this.containerId = [];
-      this.container = "";
       this.oneInfo = {};
       //获取结点的监测值
       let data = [];
       allPoints.forEach(planes => {
-        if (planes.name === plane) {
+        if (plane.indexOf(planes.name) >= 0) {
           this.oneInfo.time = planes.currenttime;
           this.oneInfo.timeStamp = planes.timeStamp;
           planes.children.forEach(sites => {
-            if (sites.name === site) {
+            if (site.indexOf(sites.name) >= 0) {
               sites.value.forEach(points => {
-                if (points.name === point) {
+                if (point.indexOf(points.name) >= 0) {
                   data = points.value;
                   this.oneInfo.type = points.type;
                   this.oneInfo.unit = points.unit;
@@ -345,6 +435,7 @@ export default {
     }
   },
   created() {
+    this.allPoints = allPoints;
     allPoints.forEach(allplane => {
       this.planes.push(allplane.name);
     });
@@ -358,9 +449,9 @@ export default {
 
 <style lang="scss" scoped>
 .el-row {
-  padding-bottom: 10px;
   border-bottom: 1px solid #dcdfe6;
   margin-bottom: 10px;
+  padding-bottom: 10px;
 }
 .graph-container {
   padding: 10px 20px;

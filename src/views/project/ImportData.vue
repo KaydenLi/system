@@ -1,5 +1,7 @@
 <template>
-  <div>关键结点</div>
+  <div>
+    <div class="upload-title">导入数据</div>
+  </div>
 </template>
 
 <script>

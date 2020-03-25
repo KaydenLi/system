@@ -18,8 +18,8 @@ export default {
   data() {
     return {
       estimationInfo: {
-        statusLevel: "A",
-        damage: "1"
+        statusLevel: "A-",
+        damage: "2"
       }
     };
   },

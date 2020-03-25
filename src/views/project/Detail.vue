@@ -1,66 +1,83 @@
 <template>
   <div>
     <el-container class="only-large-screen">
-      <el-aside :class="{hideSideBar:toogleSideBar,showSideBar:!toogleSideBar}">
+      <el-aside :class="{hideSideBar:toogleSideBar,showSideBar:!toogleSideBar}" style="width:200px">
         <el-menu
           router
-          :default-active="this.$route.path"
-          :default-open="[1]"
           unique-opened
+          :default-active="$route.path.split('/').pop()"
           class="el-menu-demo"
         >
-          <el-submenu index="1">
+          <el-submenu index="0">
             <template slot="title">
               <i class="el-icon-setting"></i>
-              <span class="menu-title">构建项目</span>
+              <span class="menu-title">项目构建</span>
             </template>
             <el-menu-item index="index">
               <i class="menu-item-icon el-icon-minus"></i>基本信息
             </el-menu-item>
             <el-menu-item index="config">
-              <i class="menu-item-icon el-icon-minus"></i>配置信息
+              <i class="menu-item-icon el-icon-minus"></i>测点布置
             </el-menu-item>
           </el-submenu>
-          <el-submenu index="2">
+          <el-submenu index="1">
             <template slot="title">
               <i class="el-icon-data-line"></i>
-              <span class="menu-title">可视化</span>
+              <span class="menu-title">数据可视化</span>
             </template>
-            <el-menu-item index="graphs">
-              <i class="menu-item-icon el-icon-minus"></i>总体信息
-            </el-menu-item>
             <el-menu-item index="tables">
               <i class="menu-item-icon el-icon-minus"></i>表格显示
             </el-menu-item>
             <el-menu-item index="lines">
-              <i class="menu-item-icon el-icon-minus"></i>波动统计
+              <i class="menu-item-icon el-icon-minus"></i>曲线显示
             </el-menu-item>
-            <el-menu-item index="important">
-              <i class="menu-item-icon el-icon-minus"></i>关键结点
+          </el-submenu>
+          <el-submenu index="2">
+            <template slot="title">
+              <i class="el-icon-view"></i>
+              <span class="menu-title">全景可视化</span>
+            </template>
+            <el-menu-item index="detection">
+              <i class="menu-item-icon el-icon-minus"></i>监测系统
+            </el-menu-item>
+            <el-menu-item index="import">
+              <i class="menu-item-icon el-icon-minus"></i>导入模型
             </el-menu-item>
           </el-submenu>
           <el-submenu index="3">
             <template slot="title">
-              <i class="el-icon-view"></i>
-              <span class="menu-title">全景监测</span>
+              <i class="el-icon-bell"></i>
+              <span class="menu-title">评估与预警</span>
             </template>
-            <el-menu-item index="detection">
-              <i class="menu-item-icon el-icon-minus"></i>全景监测系统
+            <el-menu-item index="setlimit">
+              <i class="menu-item-icon el-icon-minus"></i>阈值设定
+            </el-menu-item>
+            <el-menu-item index="estimation">
+              <i class="menu-item-icon el-icon-minus"></i>综合阈值法评估
+            </el-menu-item>
+            <el-menu-item index="lifemethod">
+              <i class="menu-item-icon el-icon-minus"></i>剩余寿命评估
+            </el-menu-item>
+            <el-menu-item index="record">
+              <i class="menu-item-icon el-icon-minus"></i>历史评估结果
+            </el-menu-item>
+            <el-menu-item index="rules">
+              <i class="menu-item-icon el-icon-minus"></i>自定义规则
             </el-menu-item>
           </el-submenu>
           <el-submenu index="4">
             <template slot="title">
-              <i class="el-icon-bell"></i>
-              <span class="menu-title">评估预警</span>
+              <i class="el-icon-receiving"></i>
+              <span class="menu-title">数据与报表</span>
             </template>
-            <el-menu-item index="estimation">
-              <i class="menu-item-icon el-icon-minus"></i>当前状态
+            <el-menu-item index="importdata">
+              <i class="menu-item-icon el-icon-minus"></i>数据导入
             </el-menu-item>
-            <el-menu-item index="history">
-              <i class="menu-item-icon el-icon-minus"></i>历史记录
+            <el-menu-item index="outputdata">
+              <i class="menu-item-icon el-icon-minus"></i>数据导出
             </el-menu-item>
-            <el-menu-item index="rules">
-              <i class="menu-item-icon el-icon-minus"></i>自定义规则
+            <el-menu-item index="report">
+              <i class="menu-item-icon el-icon-minus"></i>报告生成
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -106,7 +123,8 @@ export default {
     quitCurProject() {
       this.$router.push("/");
     }
-  }
+  },
+  created() {}
 };
 </script>
 
@@ -156,7 +174,8 @@ export default {
     }
     .router-container {
       padding: 20px;
-      height: 90vh;
+      // height: 90vh;
+      // overflow: hidden;
     }
   }
 }

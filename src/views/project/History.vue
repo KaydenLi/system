@@ -8,7 +8,11 @@
         :lg="{span: 14, offset: 5}"
         :xl="{span: 14, offset: 5}"
       >
-        <el-timeline :reverse="reverse">
+        <div class="number">
+          历史预警数
+          <span>{{history.length}}</span>
+        </div>
+        <el-timeline v-model="reverse">
           <el-timeline-item
             v-for="(item, index) in history"
             :key="index"
@@ -46,6 +50,7 @@
 export default {
   data() {
     return {
+      reverse: true,
       history: [
         {
           time: "2020-01-01 20:20:20",
@@ -85,8 +90,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.number {
+  text-align: center;
+  span {
+    color: #f56c6c;
+  }
+}
 .container {
-  border: 1px solid #E4E7ED;
+  border: 1px solid #e4e7ed;
   padding: 10px;
   border-radius: 5px;
   margin-bottom: 20px;

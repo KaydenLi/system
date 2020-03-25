@@ -28,7 +28,13 @@
       </span>
     </div>
 
-    <el-table :data="tableData" border :row-class-name="tableRowClassName">
+    <el-table
+      :data="tableData"
+      border
+      stripe
+      :row-style="{height:0+'px'}"
+      :cell-style="{padding:4+'px'}"
+    >
       <el-table-column prop="plane" :filters="planes" :filter-method="filterPlanes" label="测面"></el-table-column>
       <el-table-column prop="site" :filters="sites" :filter-method="filterSites" label="测站"></el-table-column>
       <el-table-column prop="name" label="测点"></el-table-column>
@@ -36,25 +42,26 @@
       <el-table-column prop="value" label="当前值"></el-table-column>
       <el-table-column prop="unit" label="单位"></el-table-column>
       <el-table-column prop="ratio" label="系数"></el-table-column>
-      <el-table-column prop="tag" label="自定义"></el-table-column>
+      <el-table-column
+        prop="group"
+        :formatter="formatGroup"
+        :filters="groups"
+        :filter-method="filterGroups"
+        label="所属组"
+      ></el-table-column>
       <el-table-column prop="notes" label="备注"></el-table-column>
     </el-table>
   </div>
 </template>
 
 <script>
+import { initProjectData } from "../../components/mixins/initProjectData.mixin";
 //MOCKDATA
 import { planes } from "../../mockData/plane.js";
 export default {
   data() {
     return {
-      baseInfo: {
-        time: "",
-        timeStamp: "",
-        planesNumber: 0,
-        sitesNumber: 0,
-        pointsNumber: 0
-      },
+      // 所有测点表格数据
       tableData: [
         //  {
         //     plane: "测区1",//
@@ -64,21 +71,13 @@ export default {
         //     unit:""
         //     value: "1000MPa",//
         //     ratio: "1.0",//
+        //     group:[],
         //     notes: "无"//
         //   }
-      ],
-      planes: [
-        // { text: "测区1", value: "测区1" }
-      ],
-      sites: [
-        // { text: "测站1", value: "测站1" }
-      ],
-      selecttype: [],
-      types: [
-        // { text: "应力", value: "应力" }
       ]
     };
   },
+  mixins: [initProjectData],
   methods: {
     tableRowClassName({ rowIndex }) {
       if (rowIndex === 1) {
@@ -98,21 +97,22 @@ export default {
       const property = column["property"];
       return row[property] === value;
     },
-    initData(data) {
+    formatGroup(row) {
+      return row.group.join("，");
+    },
+    filterGroups(value, row, column) {
+      const property = column["property"];
+      return row[property].indexOf(value) >= 0;
+    },
+    initTableData(data) {
       if (data.length === 0) return;
-      this.baseInfo.planesNumber = data.length;
-      this.baseInfo.time = data[0].currenttime;
-      this.baseInfo.timeStamp = data[0].timeStamp;
       data.forEach(planes => {
         if (planes.length === 0) return;
         let plane = planes.name;
-        this.planes.push({ text: plane, value: plane });
         planes.children.forEach(sites => {
           if (sites.length === 0) return;
           let site = sites.name;
           let machineinfo = sites.machineinfo;
-          this.baseInfo.sitesNumber++;
-          this.sites.push({ text: site, value: site });
           sites.value.forEach(points => {
             let data = {};
             data.notes = points.notes;
@@ -121,15 +121,11 @@ export default {
             data.type = points.type;
             data.unit = points.unit;
             data.value = points.value[0];
+            data.group = points.group;
             data.site = site;
             data.machineinfo = machineinfo;
             data.plane = plane;
             this.tableData.push(data);
-            if (this.selecttype.indexOf(points.type) === -1) {
-              let type = points.type;
-              this.selecttype.push(type);
-              this.types.push({ text: type, value: type });
-            }
           });
         });
       });
@@ -137,7 +133,8 @@ export default {
     }
   },
   created() {
-    this.initData(planes);
+    this.$_initIaseInfo(planes);
+    this.initTableData(planes);
   }
 };
 </script>
