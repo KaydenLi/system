@@ -123,20 +123,14 @@ const routes = [
           {
             //具体项目默认页面|项目管理页面
             path: 'index',
-            name: 'projects',
-            component: () => import('../views/project/MyProjects.vue')
+            name: 'project',
+            component: () => import('../views/project/Index.vue')
           },
           {
             //项目配置页面
             path: 'config',
             name: 'config',
             component: () => import('../views/project/Config.vue')
-          },
-          {
-            //具体项目图形可视化页面
-            path: 'graphs',
-            name: 'graphs',
-            component: () => import('../views/project/Graphs.vue')
           },
           {
             //表格数据页面
@@ -151,16 +145,28 @@ const routes = [
             component: () => import('../views/project/Line.vue')
           },
           {
-            //其他类型数据页面
-            path: 'important',
-            name: 'important',
-            component: () => import('../views/project/Important.vue')
-          },
-          {
             //具体项目全景监测页面
             path: 'detection',
             name: 'detection',
             component: () => import('../views/project/Detection.vue')
+          },
+          {
+            //导入模型页面
+            path: 'import',
+            name: 'import',
+            component: () => import('../views/project/Import.vue')
+          },
+          {
+            //设置限值页面
+            path: 'setlimit',
+            name: 'estimatsetlimition',
+            component: () => import('../views/project/SetLimit.vue')
+          },
+          {
+            //剩余寿命评估页面
+            path: 'lifemethod',
+            name: 'lifemethod',
+            component: () => import('../views/project/LifeEstimation.vue')
           },
           {
             //具体项目评估预警系统页面
@@ -170,15 +176,33 @@ const routes = [
           },
           {
             //历史预警记录页面
-            path: 'history',
-            name: 'history',
+            path: 'record',
+            name: 'record',
             component: () => import('../views/project/History.vue')
           },
           {
-            //自定义预警规则页面
+            //历史预警记录页面
             path: 'rules',
-            name: 'rules',
+            name: 'reles',
             component: () => import('../views/project/Rules.vue')
+          },
+          {
+            //自定义预警规则页面
+            path: 'importdata',
+            name: 'importdata',
+            component: () => import('../views/project/ImportData.vue')
+          },
+          {
+            //导入数据页面
+            path: 'outputdata',
+            name: 'outputdata',
+            component: () => import('../views/project/OutputData.vue')
+          },
+          {
+            //导出数据页面
+            path: 'report',
+            name: 'report',
+            component: () => import('../views/project/Report.vue')
           }
         ]
       },
