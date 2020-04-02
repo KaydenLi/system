@@ -39,7 +39,7 @@
       <el-table-column prop="site" :filters="sites" :filter-method="filterSites" label="测站"></el-table-column>
       <el-table-column prop="name" label="测点"></el-table-column>
       <el-table-column prop="type" :filters="types" :filter-method="filterTypes" label="类型"></el-table-column>
-      <el-table-column prop="value" label="当前值"></el-table-column>
+      <el-table-column prop="value" sortable label="当前值"></el-table-column>
       <el-table-column prop="unit" label="单位"></el-table-column>
       <el-table-column prop="ratio" label="系数"></el-table-column>
       <el-table-column
