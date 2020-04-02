@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-tabs type="border-card">
-      <el-tab-pane v-for="(module,index) in planes" :key="module._id">
+      <el-tab-pane v-for="(module,index) in planesSitesPoints" :key="module.name">
         <span slot="label">
           <i class="el-icon-files"></i>
           {{module.name}}
@@ -47,14 +47,19 @@
                 :row-style="{height:0+'px'}"
                 :cell-style="{padding:0+'px'}"
               >
-                <el-table-column prop="_id" label="ID" width="60"></el-table-column>
-                <el-table-column prop="name" label="测点名"></el-table-column>
-                <el-table-column prop="type" label="测值类型" width="120"></el-table-column>
+                <el-table-column prop="name" label="测点编号" width="120"></el-table-column>
+                <el-table-column prop="type" label="测值类型" width="80"></el-table-column>
                 <el-table-column prop="value[0]" label="当前值" width="120"></el-table-column>
                 <el-table-column prop="limit" label="设计限值" width="120"></el-table-column>
                 <el-table-column prop="unit" label="单位" width="80"></el-table-column>
                 <el-table-column prop="initialError" label="初值" width="80"></el-table-column>
                 <el-table-column prop="ratio" label="灵敏系数" width="120"></el-table-column>
+                <el-table-column
+                  prop="position"
+                  :formatter="formatPosition"
+                  label="三维坐标"
+                  width="120"
+                ></el-table-column>
                 <el-table-column prop="group" :formatter="formatGroup" label="所属分组"></el-table-column>
                 <el-table-column fixed="right" label="操作" width="80">
                   <template slot-scope="scope">
@@ -107,15 +112,41 @@
                 <el-form-item label-width="80px" label="测量间隔">
                   <el-input v-model="planeForm.timeStamp"></el-input>
                 </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" size="mini" @click="addPlane">确 定</el-button>
+                </el-form-item>
               </el-form>
-              <el-button type="primary" size="mini" @click="addPlane">确 定</el-button>
             </el-col>
           </el-row>
         </div>
       </el-tab-pane>
+      <el-tab-pane>
+        <span slot="label">
+          <i class="el-icon-upload"></i>测点导入
+        </span>
+        <div>
+          <el-upload
+            class="upload-demo"
+            action
+            :on-change="handleChange"
+            :on-exceed="handleExceed"
+            :on-remove="handleRemove"
+            :limit="limitUpload"
+            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/wps-office.xls"
+            :auto-upload="false"
+          >
+            <el-button size="small" type="primary">选择文件</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传 Microsoft Excel 的 xlsx / xls 文件</div>
+          </el-upload>
+          <el-button size="small" type="success" @click="uploadExcel">开始导入</el-button>
+          <div v-if="hasExcelData">
+            <span>上传预览：</span>
+          </div>
+        </div>
+      </el-tab-pane>
     </el-tabs>
     <!-- 添加测点dialog -->
-    <el-dialog title="添加测点" width="40%" top="2em" :visible.sync="addPointVisible">
+    <el-dialog title="添加测点" width="40%" top="1em" :visible.sync="addPointVisible">
       <el-form :model="pointForm" label-position="left">
         <el-form-item label="测点名称" label-width="80px">
           <el-input v-model="pointForm.name"></el-input>
@@ -171,7 +202,7 @@
       </div>
     </el-dialog>
     <!-- 添加测站dialog -->
-    <el-dialog title="添加测站" width="40%" top="2em" :visible.sync="addSiteVisible">
+    <el-dialog title="添加测站" width="40%" top="1em" :visible.sync="addSiteVisible">
       <el-form :model="siteForm" label-position="left">
         <el-form-item label="测站名称" label-width="80px">
           <el-input v-model="siteForm.name"></el-input>
@@ -186,7 +217,7 @@
       </div>
     </el-dialog>
     <!-- 修改测区dialog -->
-    <el-dialog title="修改测区" width="40%" top="2em" :visible.sync="editPlaneVisible">
+    <el-dialog title="修改测区" width="40%" top="1em" :visible.sync="editPlaneVisible">
       <el-form :model="editPlaneForm" label-position="left">
         <el-form-item label="测区名称" label-width="80px">
           <el-input v-model="editPlaneForm.name"></el-input>
@@ -205,7 +236,7 @@
       </div>
     </el-dialog>
     <!-- 添加测站dialog -->
-    <el-dialog title="编辑测站" width="40%" top="2em" :visible.sync="editSiteVisible">
+    <el-dialog title="编辑测站" width="40%" top="1em" :visible.sync="editSiteVisible">
       <el-form :model="editSiteForm" label-position="left">
         <el-form-item label="测站名称" label-width="80px">
           <el-input v-model="editSiteForm.name"></el-input>
@@ -220,8 +251,28 @@
       </div>
     </el-dialog>
     <!-- 修改测点dialog -->
-    <el-dialog title="修改测点" width="40%" top="2em" :visible.sync="editPointVisible">
+    <el-dialog title="修改测点" width="40%" top="1em" :visible.sync="editPointVisible">
       <el-form :model="editPointForm" label-position="left">
+        <el-form-item label="测区名称" label-width="80px">
+          <el-select v-model="editPointForm.plane" placeholder="测区名称">
+            <el-option
+              v-for="item in planes"
+              :key="item.value"
+              :value="item.value"
+              :lable="item.text"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="测站名称" label-width="80px">
+          <el-select v-model="editPointForm.site" placeholder="测站名称">
+            <el-option
+              v-for="item in sites"
+              :key="item.value"
+              :value="item.value"
+              :lable="item.text"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="测点名称" label-width="80px">
           <el-input v-model="editPointForm.name"></el-input>
         </el-form-item>
@@ -282,13 +333,19 @@
 </template>
 
 <script>
+import XLSX, { utils } from "xlsx";
 import { initProjectData } from "../../components/mixins/initProjectData.mixin";
 // MOCKDATA
 import { planes as PLANES } from "../../mockData/plane.js";
 export default {
   data() {
     return {
-      planes: [],
+      limitUpload: 1,
+      fileTemp: null,
+      file: null,
+      hasExcelData: false,
+      excelData: [],
+      planesSitesPoints: [],
       editPlaneForm: {
         name: "测区名",
         img: "url",
@@ -299,6 +356,8 @@ export default {
         machineinfo: "设备信息"
       },
       editPointForm: {
+        plane: "测区名",
+        site: "测站名",
         name: "测点名",
         type: "应力",
         unit: "MPa",
@@ -340,9 +399,171 @@ export default {
   },
   mixins: [initProjectData],
   methods: {
+    handleChange(file, fileList) {
+      window.console.log(file, fileList);
+      this.fileTemp = file.raw;
+      if (this.fileTemp) {
+        if (
+          this.fileTemp.type ==
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+          this.fileTemp.type == "application/vnd.ms-excel" ||
+          this.fileTemp.type == "application/wps-office.xls"
+        ) {
+          this.importExcel(this.fileTemp)
+            .then(res => {
+              window.console.log(res);
+              if (this.formatExcelData(res)) {
+                window.console.log("1");
+              }
+            })
+            .catch(err => {
+              this.$message.error(`文件读取失败！+${err}`);
+            });
+        } else {
+          this.$message.error("文件格式错误，请删除后重新上传！");
+        }
+      } else {
+        this.$message.error("请上传excel文件！");
+      }
+    },
+    handleRemove(file, fileList) {
+      window.console.log(file, fileList);
+      this.fileTemp = null;
+    },
+    handleExceed() {
+      this.$message.error("请删除已选择文件后重新上传！");
+    },
+    async importExcel(file) {
+      const workBook = await this.readerWorkBookFromLocal(file),
+        workSheet = workBook.Sheets[workBook.SheetNames[0]],
+        content = utils.sheet_to_json(workSheet),
+        data = {};
+      data.title = Object.keys(content[0]);
+      data.body = content;
+      return data;
+    },
+    readerWorkBookFromLocal(file) {
+      const reader = new FileReader();
+      reader.readAsBinaryString(file);
+      return new Promise(function(resolve, reject) {
+        reader.onload = function(e) {
+          const fileData = e.target.result;
+          if (reader.readyState === 2) {
+            const workBook = XLSX.read(fileData, { type: "binary" });
+            resolve(workBook);
+          } else {
+            reject("读取文件失败");
+          }
+        };
+      });
+    },
+    formatExcelData(data) {
+      let title = data.title;
+      let body = data.body;
+      let planes = [];
+      let sites = [];
+      if (body.length === 0) {
+        return false;
+      }
+      //如果用户传入了测区和测站
+      if (title.indexOf("plane") >= 0 && title.indexOf("site") >= 0) {
+        // 读取测区
+        body.forEach(item => {
+          let plane = item.plane.toString();
+          if (planes.indexOf(plane) === -1) {
+            planes.push(plane);
+          }
+        });
+        // 读取测站
+        planes.forEach(plane => {
+          body.forEach(item => {
+            if (item.plane.toString() === plane) {
+              let site = item.site.toString();
+              if (sites.indexOf(site) === -1) {
+                sites.push(site);
+              }
+            }
+          });
+        });
+        planes.forEach(plane => {
+          let planeName = plane;
+          let children = [];
+          // 读取测点
+          sites.forEach(site => {
+            let siteName = site;
+            let value = [];
+            body.forEach(item => {
+              let child = {};
+              if (
+                item.plane.toString() === plane &&
+                item.site.toString() === site
+              ) {
+                for (let key in item) {
+                  if (item[key]) {
+                    child[key] = item[key];
+                  }
+                }
+                value.push(child);
+              }
+            });
+            if (value.length > 0) {
+              children.push({ name: siteName, value: value });
+            }
+          });
+          this.excelData.push({
+            name: planeName,
+            img:
+              "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
+            children: children
+          });
+        });
+      } else {
+        //用户上传数据不包括plane或者site
+        let children = [];
+        let value = [];
+        body.forEach(item => {
+          let child = {};
+          for (let key in item) {
+            if (item[key]) {
+              child[key] = item[key];
+            }
+          }
+          value.push(child);
+        });
+        let date = new Date();
+        children.push({ name: date.getTime(), value: value });
+        this.excelData.push({
+          name: date.getTime(),
+          img:
+            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
+          children: children
+        });
+        window.console.log(this.excelData);
+      }
+    },
+    uploadExcel() {
+      //TODO上传数据到服务器
+      if (this.fileTemp == null) {
+        this.$message.error("请先选择文件，再点击导入！");
+      } else {
+        this.planesSitesPoints = this.excelData;
+        this.excelData = [];
+        this.fileTemp = null;
+        this.$message.success("数据导入成功");
+      }
+    },
     // clickTreeNode() {},
+    formatPosition(row) {
+      // let result = "[" + row.position.join(",") + "]";
+      // return result;
+      return row.position;
+    },
     formatGroup(row) {
-      return row.group.join("，");
+      if (row.group) {
+        return row.group.join("，");
+      } else {
+        return row.group;
+      }
     },
     setIndex(index, index2, index3) {
       this.index.planeIndex = index;
@@ -358,18 +579,18 @@ export default {
         this.$message.info("测区名不能为空");
         return;
       }
-      let length = this.planes.length;
+      let length = this.planesSitesPoints.length;
       tmpPlane._id = length + 1;
       let flag = false;
       for (let i = 0; i < length; i++) {
-        if (this.planes[i].name === tmpPlane.name) flag = true;
+        if (this.planesSitesPoints[i].name === tmpPlane.name) flag = true;
       }
       if (flag) {
         this.$message.info("测区名已存在");
         return;
       }
       // TODO将数据上传到服务器
-      this.planes.push(tmpPlane);
+      this.planesSitesPoints.push(tmpPlane);
       this.$message.success("测区已添加");
     },
     addSite() {},
@@ -377,7 +598,7 @@ export default {
       window.console.log(this.index);
     },
     getPlane() {
-      let plane = this.planes[this.index.planeIndex];
+      let plane = this.planesSitesPoints[this.index.planeIndex];
       this.editPlaneForm.name = plane.name;
       this.editPlaneForm.img = plane.img;
       this.editPlaneForm.timeStamp = plane.timeStamp;
@@ -397,7 +618,7 @@ export default {
         });
     },
     getSite() {
-      let plane = this.planes[this.index.planeIndex];
+      let plane = this.planesSitesPoints[this.index.planeIndex];
       let site = plane.children[this.index.siteIndex];
       this.editSiteForm.name = site.name;
       this.editSiteForm.machineinfo = site.machineinfo;
@@ -417,9 +638,11 @@ export default {
         });
     },
     getPoint() {
-      let plane = this.planes[this.index.planeIndex];
+      let plane = this.planesSitesPoints[this.index.planeIndex];
       let site = plane.children[this.index.siteIndex];
       let point = site.value[this.index.pointIndex];
+      this.editPointForm.plane = plane.name;
+      this.editPointForm.site = site.name;
       this.editPointForm.name = point.name;
       this.editPointForm.type = point.type;
       this.editPointForm.unit = point.unit;
@@ -427,7 +650,6 @@ export default {
       this.editPointForm.limit = point.limit;
       this.editPointForm.ratio = point.ratio;
       this.editPointForm.initialError = point.initialError;
-      window.console.log(this.editPointForm);
     },
     editPoint() {},
     deletePoint() {
@@ -449,14 +671,14 @@ export default {
   },
   created() {
     this.$_initIaseInfo(PLANES);
-    this.planes = PLANES;
+    this.planesSitesPoints = PLANES;
     //添加测区默认值
-    let length = this.planes.length;
+    let length = this.planesSitesPoints.length;
     if (length > 0) {
-      this.planeForm.name = this.planes[length - 1].name;
-      this.planeForm.img = this.planes[length - 1].img;
-      this.planeForm.timeStamp = this.planes[length - 1].timeStamp;
-      let plane = this.planes[length - 1];
+      this.planeForm.name = this.planesSitesPoints[length - 1].name;
+      this.planeForm.img = this.planesSitesPoints[length - 1].img;
+      this.planeForm.timeStamp = this.planesSitesPoints[length - 1].timeStamp;
+      let plane = this.planesSitesPoints[length - 1];
       if (plane.children.length > 0) {
         // 添加测站默认值
         let site = plane.children[plane.children.length - 1];
