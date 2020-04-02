@@ -23,10 +23,10 @@
       <el-table-column prop="plane" :filters="planes" :filter-method="filterPlanes" label="测面"></el-table-column>
       <el-table-column prop="site" :filters="sites" :filter-method="filterSites" label="测站"></el-table-column>
       <el-table-column prop="name" label="测点"></el-table-column>
-      <el-table-column prop="value" label="当前值"></el-table-column>
+      <el-table-column prop="value" sortable label="当前值"></el-table-column>
       <el-table-column prop="threshold" label="阈值"></el-table-column>
       <el-table-column prop="unit" label="单位"></el-table-column>
-      <el-table-column prop="over" label="超值与否"></el-table-column>
+      <el-table-column prop="over" :filters="over" :filter-method="filterLimit" label="超值与否"></el-table-column>
       <el-table-column fixed="right" label="修改阈值" width="120">
         <template slot-scope="scope">
           <el-button
@@ -62,7 +62,11 @@ export default {
       sites: [],
       overNumber: 0,
       count: 0,
-      percent: 0
+      percent: 0,
+      over: [
+        { text: "是", value: "是" },
+        { text: "否", value: "否" }
+      ]
     };
   },
   methods: {
@@ -71,6 +75,10 @@ export default {
       return row[property] === value;
     },
     filterSites(value, row, column) {
+      const property = column["property"];
+      return row[property] === value;
+    },
+    filterLimit(value, row, column) {
       const property = column["property"];
       return row[property] === value;
     },
@@ -122,8 +130,7 @@ export default {
         .then(({ value }) => {
           this.tableData.forEach(points => {
             if (points._id === point) {
-              points.value = value;
-              window.console.log(points, value);
+              points.threshold = value;
             }
           });
           this.$message.success("已设置新阈值为 " + value);
