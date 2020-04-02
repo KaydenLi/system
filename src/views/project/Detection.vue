@@ -1,5 +1,11 @@
 <template>
-  <div id="container"></div>
+  <div>
+    <!-- <div id="container"></div> -->
+    <!-- <iframe id="container" src="http://www.thingjs.com/pp/bb24a279d8f8c58dc0ce160b"></iframe> -->
+    <!-- <iframe id="container" src="http://www.thingjs.com/pp/0b1a34bae500bd9c1e06406e"></iframe> -->
+    <!-- <iframe id="container" src="http://www.thingjs.com/pp/dd1a086d0c41486130422d04"></iframe> -->
+    <iframe id="container" src='http://www.thingjs.com/pp/fae6ecf05fd6dcd5a3b290c2'></iframe>
+  </div>
 </template>
 
 <script>
@@ -88,9 +94,9 @@ export default {
     }
   },
   mounted() {
-    this.initThree(document.getElementById("container"));
-    // 执行动画循环
-    this.animate();
+    // this.initThree(document.getElementById("container"));
+    // // 执行动画循环
+    // this.animate();
   }
 };
 </script>
@@ -99,7 +105,7 @@ export default {
 #container {
   padding: 0;
   margin: 0;
-  height: 100%;
+  height: 800px;
   width: 100%;
 }
 </style>
