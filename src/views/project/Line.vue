@@ -1,12 +1,8 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="3">
-        <span>曲线查看</span>
-      </el-col>
-
       <!-- 按测区-测站-测点查看 -->
-      <el-col :span="4" :offset="1">
+      <el-col :span="3">
         <el-select
           size="mini"
           @change="getSites"
@@ -18,7 +14,7 @@
           <el-option v-for="plane in planes" :key="plane" :label="plane" :value="plane"></el-option>
         </el-select>
       </el-col>
-      <el-col :span="4" :offset="1">
+      <el-col :span="3" :offset="1">
         <el-select
           size="mini"
           v-model="select.site"
@@ -30,13 +26,22 @@
           <el-option v-for="site in sites" :key="site" :label="site" :value="site"></el-option>
         </el-select>
       </el-col>
-      <el-col :span="4" :offset="1">
+      <el-col :span="3" :offset="1">
         <el-select size="mini" v-model="select.point" multiple collapse-tags placeholder="选择测点">
           <el-option v-for="point in points" :key="point" :label="point" :value="point"></el-option>
         </el-select>
       </el-col>
-
-      <el-col :span="3" :offset="3">
+      <el-col :span="3" :offset="1">
+        <el-select size="mini" v-model="select.type" multiple collapse-tags placeholder="选择类型">
+          <el-option v-for="type in types" :key="type" :label="type" :value="type"></el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="3" :offset="1">
+        <el-select size="mini" v-model="select.time" collapse-tags placeholder="选择周期">
+          <el-option v-for="time in times" :key="time" :label="time" :value="time"></el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="3" :offset="1">
         <el-button
           type="primary"
           @click="renderPlot(select.plane,select.site,select.point)"
@@ -62,7 +67,7 @@
 import { planes as allPoints } from "../../mockData/plane.js";
 
 import { Line } from "@antv/g2plot";
-import { initProjectData } from "../../components/mixins/initProjectData.mixin";
+// import { initProjectData } from "../../components/mixins/initProjectData.mixin";
 export default {
   data() {
     return {
@@ -72,11 +77,15 @@ export default {
       select: {
         plane: [],
         site: [],
-        point: []
+        point: [],
+        type: [],
+        time: ""
       },
       planes: [],
       sites: [],
       points: [],
+      types: [],
+      times: ["1小时", "12小时", "1天", "1周", "1个月"],
       placeholderData: [
         { time: "8 mins ago", value: 3 },
         { time: "7 mins ago", value: 4 },
@@ -100,7 +109,7 @@ export default {
       oneInfo: {}
     };
   },
-  mixins: [initProjectData],
+  // mixins: [initProjectData],
   computed: {
     showPlaceholder: function() {
       return this.container === "" && this.containerId.length === 0
@@ -119,10 +128,16 @@ export default {
       this.sites = [];
       this.select.site = [];
       this.select.point = [];
+      this.select.type = [];
       this.allPoints.forEach(allplane => {
         if (val.indexOf(allplane.name) >= 0) {
           allplane.children.forEach(item => {
             this.sites.push(item.name);
+            item.value.forEach(inner => {
+              if (this.types.indexOf(inner.type) === -1) {
+                this.types.push(inner.type);
+              }
+            });
           });
         }
       });
@@ -164,16 +179,16 @@ export default {
         label: {
           visible: true,
           type: "point"
-        },
-        interactions: [
-          {
-            type: "slider",
-            cfg: {
-              start: 0,
-              end: 1
-            }
-          }
-        ]
+        }
+        // interactions: [
+        //   {
+        //     type: "slider",
+        //     cfg: {
+        //       start: 0,
+        //       end: 1
+        //     }
+        //   }
+        // ]
       });
 
       linePlot.render();
@@ -182,9 +197,11 @@ export default {
       this.select.plane = [];
       this.select.site = [];
       this.select.point = [];
+      this.select.type = [];
+      this.select.time = [];
       this.sites = [];
       this.points = [];
-      this.$message.success("测区、测站、测点数据已重置。");
+      this.$message.success("选择数据已重置。");
     },
     renderPlot(plane, site, point) {
       if (plane.length === 0) {
@@ -226,8 +243,15 @@ export default {
                 type: points.type,
                 value: points.value
               });
-              if (this.containerId.indexOf(points.type) === -1) {
-                this.containerId.push(points.type);
+              if (this.select.type.length > 0) {
+                this.select.type.forEach(type => {
+                  if (this.containerId.indexOf(type) === -1)
+                    this.containerId.push(type);
+                });
+              } else {
+                if (this.containerId.indexOf(points.type) === -1) {
+                  this.containerId.push(points.type);
+                }
               }
             });
           });
@@ -276,9 +300,19 @@ export default {
                   type: points.type,
                   value: points.value
                 });
-                if (this.containerId.indexOf(points.type) === -1) {
-                  this.containerId.push(points.type);
+                if (this.select.type.length > 0) {
+                  this.select.type.forEach(type => {
+                    if (this.containerId.indexOf(type) === -1)
+                      this.containerId.push(type);
+                  });
+                } else {
+                  if (this.containerId.indexOf(points.type) === -1) {
+                    this.containerId.push(points.type);
+                  }
                 }
+                // if (this.containerId.indexOf(points.type) === -1) {
+                //   this.containerId.push(points.type);
+                // }
               });
             }
           });
@@ -341,16 +375,16 @@ export default {
           position: "right-top"
         },
         seriesField: "type",
-        responsive: true,
-        interactions: [
-          {
-            type: "slider",
-            cfg: {
-              start: 0,
-              end: 1
-            }
-          }
-        ]
+        responsive: true
+        // interactions: [
+        //   {
+        //     type: "slider",
+        //     cfg: {
+        //       start: 0,
+        //       end: 1
+        //     }
+        //   }
+        // ]
       });
       // 渲染表格
       linePlot.render();
@@ -417,16 +451,16 @@ export default {
             xAxis: {
               type: "dateTime",
               tickCount: 5
-            },
-            interactions: [
-              {
-                type: "slider",
-                cfg: {
-                  start: 0,
-                  end: 1
-                }
-              }
-            ]
+            }
+            // interactions: [
+            //   {
+            //     type: "slider",
+            //     cfg: {
+            //       start: 0,
+            //       end: 1
+            //     }
+            //   }
+            // ]
           });
           // 渲染表格
           linePlot.render();
