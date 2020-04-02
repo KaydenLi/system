@@ -45,7 +45,7 @@
               :sm="{span: 22, offset: 1}"
               :md="{span: 22, offset: 1}"
               :lg="{span: 20, offset: 2}"
-              :xl="{span: 10, offset: 2}"
+              :xl="{span: 20, offset: 2}"
             >
               <div style="text-align:center;margin:20px 0;">
                 <el-pagination background layout="prev, pager, next" :total="100"></el-pagination>
