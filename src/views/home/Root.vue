@@ -32,18 +32,20 @@
           <el-tabs type="border-card" :value="activeTab" style="min-height:450px;">
             <!-- 我的项目标签页 -->
             <el-tab-pane name="first">
-              <span slot="label" @click="setActiveTab(`first`)">
+              <span slot="label" @click="SET_ACTIVE_TAB(`first`)">
                 <i class="el-icon-house"></i> 我的项目
               </span>
               <Header :header="projectsHeader"></Header>
-              <el-table stripe :data="userInfo.projects" :empty-text="emptyText.myprojects">
+              <el-table
+                stripe
+                :data="projects"
+                :empty-text="emptyText.myprojects"
+                v-loading="loading.projectsLoading"
+              >
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
-                <el-table-column
-                  v-for="item in projrctsTable"
-                  :key="item.projectName"
-                  :prop="item.prop"
-                  :label="item.label"
-                ></el-table-column>
+                <el-table-column label="项目名称" prop="projectName"></el-table-column>
+                <el-table-column label="创建日期" prop="createdTime" :formatter="formatDate"></el-table-column>
+                <el-table-column label="项目地址" prop="address"></el-table-column>
                 <el-table-column label="操作" fixed="right">
                   <template slot-scope="scope">
                     <el-button type="primary" size="mini" @click="toDetail(scope.row._id)">详情</el-button>
@@ -54,7 +56,7 @@
 
             <!-- 开放项目标签页 -->
             <el-tab-pane name="second">
-              <span slot="label" @click="setActiveTab(`second`);getApplicationProject()">
+              <span slot="label" @click="SET_ACTIVE_TAB(`second`);getApplicationProject()">
                 <i class="el-icon-sold-out"></i> 开放项目
               </span>
               <Header :header="requestHeader"></Header>
@@ -109,7 +111,7 @@
 
             <!-- 授权项目标签页 -->
             <el-tab-pane name="third">
-              <span slot="label" @click="setActiveTab(`third`);getAuthProject()">
+              <span slot="label" @click="SET_ACTIVE_TAB(`third`);getAuthProject()">
                 <i class="el-icon-sell"></i> 授权项目
               </span>
               <Header :header="openRequestHeader"></Header>
@@ -156,7 +158,7 @@
 
             <!-- 用户中心标签页 -->
             <el-tab-pane name="fourth">
-              <span slot="label" @click="setActiveTab(`fourth`)">
+              <span slot="label" @click="SET_ACTIVE_TAB(`fourth`)">
                 <i class="el-icon-user"></i> 用户中心
               </span>
               <Header :header="centerHeader"></Header>
@@ -191,12 +193,6 @@ export default {
         checks: "暂无任何授权请求。",
         opens: "您还没有开放任何项目。"
       },
-      //用户项目表格
-      projrctsTable: [
-        { prop: "projectName", label: "项目名称" },
-        { prop: "date", label: "创建日期" },
-        { prop: "address", label: "项目地址" }
-      ],
       //用户请求授权表格
       toAuthTable: [
         { prop: "projectName", label: "项目名称" },
@@ -276,6 +272,7 @@ export default {
         hasQuestion: false
       },
       loading: {
+        projectsLoading: false,
         applicationLoading: false,
         authLoading: false
       }
@@ -287,6 +284,7 @@ export default {
   },
   computed: {
     ...mapState([
+      "projects",
       "userInfo",
       "loadingFlags",
       "authProjects",
@@ -296,6 +294,7 @@ export default {
   },
   methods: {
     ...mapMutations([
+      "INIT_PROJECTS",
       "INIT_AUTH_ABOUT_PROJECTS",
       "INIT_APPLICATION_ABOUT_PROJECTS",
       "CHANGE_LOADING",
@@ -303,6 +302,13 @@ export default {
       "SET_AUTH_STATUS",
       "SET_APPLICATION_STATUS"
     ]),
+    formatDate(row) {
+      if (row.createdTime) {
+        return row.createdTime.split("T")[0];
+      } else {
+        return;
+      }
+    },
     toDetail(id) {
       this.$router.push(`/project/${id}/index`);
     },
@@ -322,7 +328,17 @@ export default {
       this.$router.push("/index");
     },
     closeWelcom() {
-      this.$store.commit("closeWelcome");
+      this.$store.commit("CLOSE_WELCOME");
+    },
+    getProjects() {
+      if (this.projects.updated) {
+        return;
+      }
+      this.loading.projectsLoading = true;
+      this.$http.get(`project/${this.userInfo._id}/list`).then(res => {
+        this.INIT_PROJECTS(res.data);
+        this.loading.projectsLoading = false;
+      });
     },
     getApplicationProject() {
       if (this.applicationProjects.updated) {
@@ -350,7 +366,11 @@ export default {
       }, 1000);
     }
   },
-  created() {}
+  created() {
+    this.getProjects();
+    // this.getApplicationProject();
+    // this.getAuthProject();
+  }
 };
 </script>
 

@@ -109,7 +109,7 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["initUserInfo"]),
+    ...mapMutations(["INIT_USER_INFO"]),
     checkUserName() {
       if (!/^1[3456789]\d{9}$/.test(this.model.phone)) {
         this.userIcon = "el-icon-circle-close";
@@ -150,6 +150,8 @@ export default {
       loginForm.phone = this.model.phone;
       loginForm.password = this.model.password;
       this.$http.post("user/login", this.model).then(res => {
+        window.console.log(res.data);
+        this.INIT_USER_INFO(res.data.userInfo);
         localStorage.token = res.data.token;
         this.$message({
           message: "登录成功!",
