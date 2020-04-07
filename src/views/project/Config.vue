@@ -1,14 +1,14 @@
 <template>
   <div>
     <el-tabs type="border-card">
-      <el-tab-pane v-for="(module,index) in planesSitesPoints" :key="module.name">
+      <el-tab-pane v-for="(module,index) in project" :key="module._id">
         <span slot="label">
           <i class="el-icon-files"></i>
           {{module.name}}
         </span>
         <!-- 测面信息 -->
         <p class="moudle-title">
-          测区{{module.name}}，共{{module.children.length}}个测站
+          测区{{module.name}}
           <el-button
             type="primary"
             size="mini"
@@ -28,7 +28,7 @@
             :xl="{span: 20, offset: 2}"
           >
             <!-- 测站信息 -->
-            <div v-for="(item,index2) in module.children" :key="item.name" class="tree">
+            <div v-for="(item,index2) in module.children" :key="item._id" class="tree">
               <span class="site-name">
                 <i :class="iconClass"></i>
                 测站：{{item.name}}
@@ -81,7 +81,10 @@
             </div>
             <!-- 添加测站 -->
             <div class="tree-site-add">
-              <el-button type="text" @click="addSiteVisible = true,setIndex(index,-1,-1)">
+              <el-button
+                type="text"
+                @click="addSiteVisible = true,setIndex(index,-1,-1),getPlane()"
+              >
                 <i class="el-icon-circle-plus-outline"></i>
                 添加测站
               </el-button>
@@ -89,7 +92,7 @@
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane>
+      <el-tab-pane name="addPlane">
         <span slot="label">
           <i class="el-icon-circle-plus-outline"></i>添加测区
         </span>
@@ -120,7 +123,7 @@
           </el-row>
         </div>
       </el-tab-pane>
-      <el-tab-pane>
+      <el-tab-pane name="importSensor">
         <span slot="label">
           <i class="el-icon-upload"></i>测点导入
         </span>
@@ -213,7 +216,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="addSiteVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addSiteVisible = false">添 加</el-button>
+        <el-button type="primary" @click="addSiteVisible = false;addSite(editPlaneForm._id)">添 加</el-button>
       </div>
     </el-dialog>
     <!-- 修改测区dialog -->
@@ -231,8 +234,11 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="danger" @click="editPlaneVisible = false,deletePlane()">删 除</el-button>
-        <el-button type="primary" @click="editPlaneVisible = false,editPlane()">修 改</el-button>
+        <el-button
+          type="danger"
+          @click="editPlaneVisible = false,deletePlane(editPlaneForm._id)"
+        >删 除</el-button>
+        <el-button type="primary" @click="editPlaneVisible = false,editPlane(editPlaneForm._id)">修 改</el-button>
       </div>
     </el-dialog>
     <!-- 添加测站dialog -->
@@ -247,7 +253,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="danger" @click="editSiteVisible = false;deleteSite()">删 除</el-button>
-        <el-button type="primary" @click="editSiteVisible = false">添 加</el-button>
+        <el-button type="primary" @click="editSiteVisible = false;editSite()">修 改</el-button>
       </div>
     </el-dialog>
     <!-- 修改测点dialog -->
@@ -326,7 +332,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="danger" @click="editPointVisible = false,deletePoint()">删 除</el-button>
-        <el-button type="primary" @click="editPointVisible = false,addPoint">添 加</el-button>
+        <el-button type="primary" @click="editPointVisible = false,editPoint()">添 加</el-button>
       </div>
     </el-dialog>
   </div>
@@ -335,8 +341,7 @@
 <script>
 import XLSX, { utils } from "xlsx";
 import { initProjectData } from "../../components/mixins/initProjectData.mixin";
-// MOCKDATA
-import { planes as PLANES } from "../../mockData/plane.js";
+import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -345,13 +350,15 @@ export default {
       file: null,
       hasExcelData: false,
       excelData: [],
-      planesSitesPoints: [],
+      // planesSitesPoints: [],
       editPlaneForm: {
+        _id: "",
         name: "测区名",
         img: "url",
         timeStamp: "60"
       },
       editSiteForm: {
+        _id: "",
         name: "测站名",
         machineinfo: "设备信息"
       },
@@ -374,7 +381,6 @@ export default {
       editPointVisible: false,
       // 新建测区表单
       planeForm: {
-        _id: "0",
         name: "测区名",
         img: "url",
         timeStamp: "60",
@@ -398,9 +404,12 @@ export default {
     };
   },
   mixins: [initProjectData],
+  computed: {
+    ...mapState(["project"])
+  },
   methods: {
-    handleChange(file, fileList) {
-      window.console.log(file, fileList);
+    ...mapMutations(["INIT_CURRENT_PROJECT"]),
+    handleChange(file) {
       this.fileTemp = file.raw;
       if (this.fileTemp) {
         if (
@@ -411,7 +420,6 @@ export default {
         ) {
           this.importExcel(this.fileTemp)
             .then(res => {
-              window.console.log(res);
               if (this.formatExcelData(res)) {
                 window.console.log("1");
               }
@@ -507,7 +515,7 @@ export default {
               }
             });
             if (value.length > 0) {
-              children.push({ name: siteName, value: value });
+              children.push({ name: siteName, value: value, machineinfo: "" });
             }
           });
           this.excelData.push({
@@ -530,15 +538,13 @@ export default {
           }
           value.push(child);
         });
-        let date = new Date();
-        children.push({ name: date.getTime(), value: value });
+        children.push({ name: "site1", value: value });
         this.excelData.push({
-          name: date.getTime(),
+          name: "plane1",
           img:
             "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
           children: children
         });
-        window.console.log(this.excelData);
       }
     },
     uploadExcel() {
@@ -546,16 +552,28 @@ export default {
       if (this.fileTemp == null) {
         this.$message.error("请先选择文件，再点击导入！");
       } else {
-        this.planesSitesPoints = this.excelData;
+        // this.planesSitesPoints = this.excelData;
+        this.$http
+          .post(`project/${this.$route.params.id}/import`, this.excelData)
+          .then(res => {
+            if (res.data.status === true) {
+              this.$http
+                .get(`project/${this.$route.params.id}/sensor`)
+                .then(response => {
+                  this.$_initBaseInfo(response.data);
+                  // this.planesSitesPoints = response.data;
+                  this.INIT_CURRENT_PROJECT(response.data);
+                  this.$message.success("数据导入成功");
+                });
+            } else {
+              this.$message.error("导入数据出错");
+            }
+          });
         this.excelData = [];
         this.fileTemp = null;
-        this.$message.success("数据导入成功");
       }
     },
-    // clickTreeNode() {},
     formatPosition(row) {
-      // let result = "[" + row.position.join(",") + "]";
-      // return result;
       return row.position;
     },
     formatGroup(row) {
@@ -579,51 +597,144 @@ export default {
         this.$message.info("测区名不能为空");
         return;
       }
-      let length = this.planesSitesPoints.length;
-      tmpPlane._id = length + 1;
+      let length = this.project.length;
       let flag = false;
       for (let i = 0; i < length; i++) {
-        if (this.planesSitesPoints[i].name === tmpPlane.name) flag = true;
+        if (this.project[i].name === tmpPlane.name) flag = true;
       }
       if (flag) {
         this.$message.info("测区名已存在");
         return;
       }
-      // TODO将数据上传到服务器
-      this.planesSitesPoints.push(tmpPlane);
-      this.$message.success("测区已添加");
+      this.$http
+        .post(`project/${this.$route.params.id}/importplane`, this.planeForm)
+        .then(res => {
+          this.$_initBaseInfo(res.data);
+          this.INIT_CURRENT_PROJECT(res.data);
+          this.$message.success("测区已添加");
+        });
     },
-    addSite() {},
+    addSite(id) {
+      window.console.log(this.editSiteForm, id);
+      let tmpSite = {};
+      for (let key in this.siteForm) {
+        tmpSite[key] = this.siteForm[key];
+      }
+      if (tmpSite.name === "") {
+        this.$message.info("测站名不能为空");
+        return;
+      }
+      let flag = false;
+      let currentSite = this.project[this.index.planeIndex].children;
+      let length = currentSite.length;
+      for (let i = 0; i < length; i++) {
+        if (currentSite[i].name === tmpSite.name) flag = true;
+      }
+      if (flag) {
+        this.$message.info("测站名已存在");
+        return;
+      }
+      this.$http
+        .post(
+          `project/${this.$route.params.id}/importsite/${id}`,
+          this.siteForm
+        )
+        .then(res => {
+          this.$_initBaseInfo(res.data);
+          this.INIT_CURRENT_PROJECT(res.data);
+          this.$message.success("测区已添加");
+        });
+    },
     addPoint() {
-      window.console.log(this.index);
+      let tmpPoint = {};
+      for (let key in this.pointForm) {
+        tmpPoint[key] = this.pointForm[key];
+      }
+      if (tmpPoint.name === "") {
+        this.$message.info("测站名不能为空");
+        return;
+      }
+      let flag = false;
+      let currentPoint = this.project[this.index.planeIndex].children[
+        this.index.siteIndex
+      ].value;
+      let length = currentPoint.length;
+      for (let i = 0; i < length; i++) {
+        if (currentPoint[i].name === tmpPoint.name) flag = true;
+      }
+      if (flag) {
+        this.$message.info("测站名已存在");
+        return;
+      }
+      // this.$http
+      //   .post(`project/${this.$route.params.id}/importplane`, this.planeForm)
+      //   .then(res => {
+      //     this.$_initBaseInfo(res.data);
+      //     this.INIT_CURRENT_PROJECT(res.data);
+      //     this.$message.success("测区已添加");
+      //   });
     },
     getPlane() {
-      let plane = this.planesSitesPoints[this.index.planeIndex];
+      let plane = this.project[this.index.planeIndex];
+      this.editPlaneForm._id = plane._id;
       this.editPlaneForm.name = plane.name;
       this.editPlaneForm.img = plane.img;
       this.editPlaneForm.timeStamp = plane.timeStamp;
     },
-    editPlane() {},
-    deletePlane() {
+    editPlane(id) {
+      this.$http
+        .post(
+          `/project/${this.$route.params.id}/editplane/${id}`,
+          this.editPlaneForm
+        )
+        .then(res => {
+          this.$_initBaseInfo(res.data);
+          this.INIT_CURRENT_PROJECT(res.data);
+          this.$message.success("修改成功!");
+        });
+    },
+    deletePlane(id) {
       this.$confirm("此操作将永久删除该测站, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$message.success("删除成功!");
+          this.$http
+            .delete(`/project/${this.$route.params.id}/deleteplane/${id}`)
+            .then(res => {
+              this.$_initBaseInfo(res.data);
+              this.INIT_CURRENT_PROJECT(res.data);
+              this.$message.success("删除成功!");
+            });
         })
         .catch(() => {
           this.$message.info("已取消删除");
         });
     },
     getSite() {
-      let plane = this.planesSitesPoints[this.index.planeIndex];
+      let plane = this.project[this.index.planeIndex];
       let site = plane.children[this.index.siteIndex];
+      this.editSiteForm._id = site._id;
       this.editSiteForm.name = site.name;
       this.editSiteForm.machineinfo = site.machineinfo;
     },
-    editSite() {},
+    editSite() {
+      let plane = this.project[this.index.planeIndex];
+      let site = plane.children[this.index.siteIndex];
+      let planeId = plane._id;
+      let siteId = site._id;
+      this.$http
+        .post(
+          `/project/${this.$route.params.id}/editsite/${planeId}/${siteId}`,
+          this.editSiteForm
+        )
+        .then(res => {
+          this.$_initBaseInfo(res.data);
+          this.INIT_CURRENT_PROJECT(res.data);
+          this.$message.success("修改成功!");
+        });
+    },
     deleteSite() {
       this.$confirm("此操作将永久删除该区, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -631,14 +742,26 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$message.success("删除成功!");
+          let plane = this.project[this.index.planeIndex];
+          let site = plane.children[this.index.siteIndex];
+          let planeId = plane._id;
+          let siteId = site._id;
+          this.$http
+            .delete(
+              `/project/${this.$route.params.id}/deletesite/${planeId}/${siteId}`
+            )
+            .then(res => {
+              this.$_initBaseInfo(res.data);
+              this.INIT_CURRENT_PROJECT(res.data);
+              this.$message.success("删除成功!");
+            });
         })
         .catch(() => {
-          this.$message.info("已取消删除");
+          this.$message.info("删除出错");
         });
     },
     getPoint() {
-      let plane = this.planesSitesPoints[this.index.planeIndex];
+      let plane = this.project[this.index.planeIndex];
       let site = plane.children[this.index.siteIndex];
       let point = site.value[this.index.pointIndex];
       this.editPointForm.plane = plane.name;
@@ -670,24 +793,24 @@ export default {
     }
   },
   created() {
-    this.$_initIaseInfo(PLANES);
-    this.planesSitesPoints = PLANES;
-    //添加测区默认值
-    let length = this.planesSitesPoints.length;
-    if (length > 0) {
-      this.planeForm.name = this.planesSitesPoints[length - 1].name;
-      this.planeForm.img = this.planesSitesPoints[length - 1].img;
-      this.planeForm.timeStamp = this.planesSitesPoints[length - 1].timeStamp;
-      let plane = this.planesSitesPoints[length - 1];
-      if (plane.children.length > 0) {
-        // 添加测站默认值
-        let site = plane.children[plane.children.length - 1];
-        this.siteForm.machineinfo = site.machineinfo;
-        this.siteForm.name = site.name;
+    this.$http.get(`project/${this.$route.params.id}/sensor`).then(res => {
+      this.$_initBaseInfo(res.data);
+      this.INIT_CURRENT_PROJECT(res.data);
+      //添加测区默认值
+      let length = this.project.length;
+      if (length > 0) {
+        this.planeForm.name = this.project[length - 1].name;
+        this.planeForm.img = this.project[length - 1].img;
+        this.planeForm.timeStamp = this.project[length - 1].timeStamp;
+        let plane = this.project[length - 1];
+        if (plane.children.length > 0) {
+          // 添加测站默认值
+          let site = plane.children[plane.children.length - 1];
+          this.siteForm.machineinfo = site.machineinfo;
+          this.siteForm.name = site.name;
+        }
       }
-    }
-
-    // 添加测点默认信息
+    });
   }
 };
 </script>

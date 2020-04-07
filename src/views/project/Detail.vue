@@ -85,7 +85,7 @@
       <el-main class="set-height">
         <el-header class="content-header" height="40px">
           <i class="el-icon-s-grid header-icon" title="隐藏/显示侧边栏" @click="TOOGLE_SIDE_BAR"></i>
-          <span>{{project.name}}结构三维可视化监测系统</span>
+          <span>{{projectInfo.projectName}}结构三维可视化监测系统</span>
           <i class="el-icon-switch-button header-icon" title="退出当前项目" @click="quitCurProject"></i>
         </el-header>
         <router-view class="router-container"></router-view>
@@ -109,22 +109,24 @@ import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
-      project: {
-        name: "湖北省武汉市洪山区华中科技大学xxxxxx建设项目"
-      },
       header: { menu: "项目详情", toPageName: "返回主页", to: "/" }
     };
   },
   computed: {
-    ...mapState(["toogleSideBar"])
+    ...mapState(["toogleSideBar", "projectInfo"])
   },
   methods: {
-    ...mapMutations(["TOOGLE_SIDE_BAR"]),
+    ...mapMutations(["TOOGLE_SIDE_BAR", "INIT_CURRENT_PROJECT_INFO"]),
     quitCurProject() {
       this.$router.push("/");
     }
   },
-  created() {}
+  created() {
+    let id = this.$route.params.id;
+    this.$http.get(`project/${id}`).then(res => {
+      this.INIT_CURRENT_PROJECT_INFO(res.data);
+    });
+  }
 };
 </script>
 

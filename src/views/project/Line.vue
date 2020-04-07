@@ -63,11 +63,8 @@
 </template>
 
 <script>
-//MOCKDATA
-import { planes as allPoints } from "../../mockData/plane.js";
-
 import { Line } from "@antv/g2plot";
-// import { initProjectData } from "../../components/mixins/initProjectData.mixin";
+import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -111,6 +108,7 @@ export default {
   },
   // mixins: [initProjectData],
   computed: {
+    ...mapState(["project"]),
     showPlaceholder: function() {
       return this.container === "" && this.containerId.length === 0
         ? true
@@ -124,6 +122,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(["INIT_CURRENT_PROJECT"]),
     getSites(val) {
       this.sites = [];
       this.select.site = [];
@@ -232,7 +231,7 @@ export default {
       this.getBaseInfo();
       this.allPlanePoints = [];
       // 生成并获取div#id
-      allPoints.forEach(planes => {
+      this.allPoints.forEach(planes => {
         if (plane.indexOf(planes.name) >= 0) {
           planes.children.forEach(sites => {
             sites.value.forEach(points => {
@@ -288,7 +287,7 @@ export default {
       this.getBaseInfo();
       // 生成并获取div#id
       this.oneSitePoints = [];
-      allPoints.forEach(planes => {
+      this.allPoints.forEach(planes => {
         if (plane.indexOf(planes.name) >= 0) {
           planes.children.forEach(sites => {
             if (site.indexOf(sites.name) >= 0) {
@@ -394,7 +393,7 @@ export default {
       this.oneInfo = {};
       //获取结点的监测值
       let data = [];
-      allPoints.forEach(planes => {
+      this.allPoints.forEach(planes => {
         if (plane.indexOf(planes.name) >= 0) {
           this.oneInfo.time = planes.currenttime;
           this.oneInfo.timeStamp = planes.timeStamp;
@@ -469,8 +468,15 @@ export default {
     }
   },
   created() {
-    this.allPoints = allPoints;
-    allPoints.forEach(allplane => {
+    if (this.project == null) {
+      this.$http.get(`/project/${this.$route.params.id}/sensor`).then(res => {
+        this.INIT_CURRENT_PROJECT(res.data);
+        this.allPoints = res.data;
+      });
+    } else {
+      this.allPoints = this.project;
+    }
+    this.allPoints.forEach(allplane => {
       this.planes.push(allplane.name);
     });
     this.$nextTick(() => {

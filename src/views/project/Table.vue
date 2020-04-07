@@ -56,8 +56,7 @@
 
 <script>
 import { initProjectData } from "../../components/mixins/initProjectData.mixin";
-//MOCKDATA
-import { planes } from "../../mockData/plane.js";
+import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -77,8 +76,12 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapState(["project"])
+  },
   mixins: [initProjectData],
   methods: {
+    ...mapMutations(["INIT_CURRENT_PROJECT"]),
     tableRowClassName({ rowIndex }) {
       if (rowIndex === 1) {
         window.console.log(rowIndex);
@@ -133,8 +136,15 @@ export default {
     }
   },
   created() {
-    this.$_initIaseInfo(planes);
-    this.initTableData(planes);
+    if (this.project.length > 0) {
+      this.$_initBaseInfo(this.project);
+      this.initTableData(this.project);
+    } else {
+      this.$http.get(`/project/${this.$route.params.id}/sensor`).then(res => {
+        this.$_initBaseInfo(res.data);
+        this.initTableData(res.data);
+      });
+    }
   }
 };
 </script>

@@ -20,11 +20,11 @@
             class="demo-ruleForm"
             label-position="left"
           >
-            <el-form-item label="项目名称" prop="projectkName">
-              <el-input v-model="model.projectkName" clearable></el-input>
+            <el-form-item label="项目名称" prop="projectName">
+              <el-input v-model="model.projectName" clearable></el-input>
             </el-form-item>
-            <el-form-item label="项目地址" prop="projectAddress">
-              <el-input v-model="model.projectAddress" clearable></el-input>
+            <el-form-item label="项目地址" prop="address">
+              <el-input v-model="model.address" clearable></el-input>
             </el-form-item>
             <div id="container"></div>
             <el-form-item label="结构类型" prop="type">
@@ -73,13 +73,14 @@ export default {
         to: "/"
       },
       model: {
-        projectkName: "",
-        projectAddress: "",
-        aim: "",
-        type: ""
+        projectName: "项目名称",
+        address: "湖北省武汉市洪山区",
+        aim: "用于！！！项目申请理由。",
+        type: "钢筋混凝土结构",
+        createdTime: ""
       },
       rules: {
-        projectkName: [
+        projectName: [
           { required: true, message: "请输入项目名称", trigger: "blur" },
           {
             min: 3,
@@ -88,7 +89,7 @@ export default {
             trigger: "change"
           }
         ],
-        projectAddress: [
+        address: [
           { required: true, message: "请输入项目所在地", trigger: "blur" },
           {
             min: 6,
@@ -129,9 +130,13 @@ export default {
     createProject(rules) {
       this.$refs[rules].validate(valid => {
         if (valid) {
-          // this.$http.post("project/create", this.model).then(res => {
-          //   window.console.log(res)
-          // });
+          let date = new Date();
+          this.model.createdTime = date;
+          this.model.projectName = this.model.projectName.trim();
+          this.$http.post("project/create", this.model).then(res => {
+            window.console.log(res);
+            this.$message.success(`新建项目${res.data.projectName}`);
+          });
         } else {
           return false;
         }

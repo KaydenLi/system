@@ -8,7 +8,7 @@
           :show-file-list="false"
           :on-success="handleSuccess"
         >
-          <img v-if="project.img" :src="project.img" class="avatar el-upload" />
+          <img v-if="projectInfo.img" :src="projectInfo.img" class="avatar el-upload" />
           <i v-else class="el-icon-plus avatar-uploader-icon el-upload"></i>
           <div slot="tip" class="el-upload__tip">点击即可修改项目图片，支持jpg/png文件，建议尺寸为：400*300。</div>
         </el-upload>
@@ -17,33 +17,49 @@
         <div class="project-item">
           <i class="el-icon-price-tag"></i>
           <span class="item-title">项目名称：</span>
-          <span>{{project.projectName}}</span>
-          <i class="el-icon-edit" @click="updateProject('项目名称')"></i>
+          <span>{{projectInfo.projectName}}</span>
         </div>
         <div class="project-item">
           <i class="el-icon-map-location"></i>
           <span class="item-title">项目地址：</span>
-          <span>{{project.address}}</span>
-          <i class="el-icon-edit" @click="updateProject('项目地址')"></i>
+          <span>{{projectInfo.address}}</span>
         </div>
         <div class="project-item">
           <i class="el-icon-guide"></i>
           <span class="item-title">结构类型：</span>
-          <span>{{project.type}}</span>
-          <i class="el-icon-edit" @click="updateProject('结构类型')"></i>
+          <span>{{projectInfo.structuralType}}</span>
+        </div>
+        <div class="project-item">
+          <i class="el-icon-view"></i>
+          <span class="item-title">开放状态：</span>
+          <span>{{projectInfo.openStatus===false?"未开放":"已开放"}}</span>
+        </div>
+        <div class="project-item">
+          <el-button
+            class="edit-item"
+            @click="dialogEditVisible = true"
+            type="primary"
+            size="mini"
+          >修改</el-button>
         </div>
       </div>
     </div>
 
     <div class="project-info">
-      <div v-for="item in project.infos" :key="item.name" class="item-class">
+      <div
+        v-for="item in baseInfo"
+        :key="item._id"
+        @click="dialogEditInfoVisible=true;editInfo(item)"
+        class="item-class"
+        title="点击修改信息"
+      >
         <p>
           <i :class="item.icon"></i>
         </p>
         <span>{{item.name}}</span>
         <p class="value">{{item.value}}{{item.unit}}</p>
       </div>
-      <div class="item-class add-info" @click="dialogTableVisible = true">
+      <div class="item-class add-info" @click="dialogTableVisible = true" title="点击新增信息">
         <p>
           <i class="el-icon-circle-plus-outline"></i>
         </p>
@@ -53,18 +69,20 @@
     </div>
 
     <el-dialog title="添加项目当前信息" :visible.sync="dialogTableVisible" width="40%">
-      <el-form :model="form">
+      <el-form :model="itemForm">
         <el-form-item label="信息项名称" label-width="6em">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="itemForm.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="信息项图标" label-width="6em">
-          <el-input v-model="form.icon" autocomplete="off"></el-input>
+          <el-input v-model="itemForm.icon" autocomplete="off">
+            <el-button slot="append" icon="el-icon-search" @click="toIcons" title="点击查看图标列表"></el-button>
+          </el-input>
         </el-form-item>
         <el-form-item label="信息项值" label-width="6em">
-          <el-input v-model="form.value" autocomplete="off"></el-input>
+          <el-input v-model="itemForm.value" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="单位" label-width="6em">
-          <el-input v-model="form.unit" autocomplete="off"></el-input>
+          <el-input v-model="itemForm.unit" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -72,105 +90,164 @@
         <el-button type="primary" @click="dialogTableVisible = false;addInfo()">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="修改项目当前信息" :visible.sync="dialogEditInfoVisible" width="40%">
+      <el-form :model="editInfoForm">
+        <el-form-item label="信息项名称" label-width="6em">
+          <el-input v-model="editInfoForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="信息项图标" label-width="6em">
+          <el-input v-model="editInfoForm.icon" autocomplete="off">
+            <el-button slot="append" icon="el-icon-search" @click="toIcons" title="点击查看图标列表"></el-button>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="信息项值" label-width="6em">
+          <el-input v-model="editInfoForm.value" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="单位" label-width="6em">
+          <el-input v-model="editInfoForm.unit" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="danger" @click="dialogEditInfoVisible = false;deleteInfo()">删 除</el-button>
+        <el-button type="primary" @click="dialogEditInfoVisible = false;updateInfo()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="修改项目基本信息" :visible.sync="dialogEditVisible" width="40%">
+      <el-form :model="updateForm">
+        <el-form-item label="项目名称" label-width="6em">
+          <el-input v-model="updateForm.projectName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="项目地址" label-width="6em">
+          <el-input v-model="updateForm.address" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="项目结构" label-width="6em">
+          <el-input v-model="updateForm.structuralType" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="开放状态" label-width="6em">
+          <el-select v-model="openStatusValue">
+            <el-option label="开放" value="开放"></el-option>
+            <el-option label="不开放" value="不开放"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogEditVisible = false;cancelUpdateProject()">取 消</el-button>
+        <el-button type="primary" @click="dialogEditVisible = false;updateProject()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
-      project: {
-        _id: "1",
-        projectName: "湖北省武汉市洪山区华中科技大学xxxxxx建设项目",
-        owner: "kaydenli",
-        owner_id: "1",
-        createdDate: "2019-09-08",
-        address: "湖北省武汉市洪山区华中科技大学湖北省武汉市洪山区华中科技大学",
-        img:
-          "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-        points: "",
-        type: "钢筋混凝土结构，框架结构",
-        infos: [
-          { name: "ID", icon: "el-icon-bank-card", value: "1", unit: "" },
-          {
-            name: "创建日期",
-            icon: "el-icon-date",
-            value: "2020/02/02",
-            unit: ""
-          },
-          {
-            name: "所有者",
-            icon: "el-icon-user",
-            value: "kaydenli",
-            unit: ""
-          },
-          { name: "查看人数", icon: "el-icon-view", value: 1234, unit: "人" },
-          { name: "温度", icon: "el-icon-sunny", value: 25, unit: "℃" },
-          { name: "气压", icon: "el-icon-timer", value: 1.0, unit: "MPa" },
-          { name: "风速", icon: "el-icon-wind-power", value: 3.5, unit: "m/s" },
-          {
-            name: "风向",
-            icon: "el-icon-wind-power",
-            value: "西偏北15",
-            unit: "°"
-          }
-        ]
-      },
-
       dialogTableVisible: false,
-      form: {
+      dialogEditVisible: false,
+      dialogEditInfoVisible: false,
+      baseInfo: [],
+      itemForm: {
         name: "信息项",
         icon: "el-icon-menu",
         value: "0",
         unit: "m/s"
-      }
+      },
+      updateForm: {
+        projectName: "",
+        address: "",
+        structuralType: "",
+        openStatus: false
+      },
+      editInfoForm: {},
+      openStatusValue: "不开放"
     };
+  },
+  computed: {
+    ...mapState(["projectInfo"])
   },
   components: {},
   methods: {
+    ...mapMutations(["INIT_CURRENT_PROJECT_INFO"]),
     editProject() {
       this.$message.info(`修改`);
     },
     handleSuccess() {
       this.$message.info(`封面图片上传成功`);
     },
-    updateProject(title) {
-      this.$prompt(`请输入新的${title}`, "更新项目信息", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消"
-      })
-        .then(({ value }) => {
-          this.$message({
-            type: "success",
-            message: `${title}已成功更新为` + value
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: `已取消更新${title}`
-          });
-        });
+    updateProject() {
+      let id = this.$route.params.id;
+      if (this.openStatusValue === "不开放") {
+        this.updateForm.openStatus = false;
+      } else {
+        this.updateForm.openStatus = true;
+      }
+      this.$http.post(`project/${id}/update`, this.updateForm).then(res => {
+        this.INIT_CURRENT_PROJECT_INFO(res.data);
+        this.$message.success("信息修改成功");
+      });
+    },
+    cancelUpdateProject() {
+      this.$message("已取消修改项目信息");
     },
     cancelAddInfo() {
       this.$message("已取消添加信息项");
     },
     addInfo() {
-      //TODO添加信息项
-      const names = [];
-      this.infos.forEach(item => {
-        names.push(item.name);
+      let flag = false;
+      this.baseInfo.forEach(item => {
+        if (item.name === this.itemForm.name) {
+          flag = true;
+        }
       });
-      if (names.indexOf(this.form.name) >= 0) {
-        this.$message.error("该信息项已存在");
+      if (flag) {
+        this.$message.error("信息项已存在，请勿重复添加");
         return;
       }
-      this.infos.push(this.form);
-      this.$message.success("成功添加了一条信息项");
+      this.$http
+        .post(`/project/${this.$route.params.id}/addinfo`, this.itemForm)
+        .then(res => {
+          this.INIT_CURRENT_PROJECT_INFO(res.data);
+          this.baseInfo = this.projectInfo.baseInfo;
+          this.$message.success("成功添加了一条信息项");
+        });
+    },
+    editInfo(item) {
+      this.editInfoForm = item;
+    },
+    deleteInfo() {
+      this.$http
+        .post(
+          `/project/${this.$route.params.id}/deleteinfo/${this.editInfoForm._id}`,
+          this.editInfoForm
+        )
+        .then(res => {
+          this.INIT_CURRENT_PROJECT_INFO(res.data);
+          this.baseInfo = this.projectInfo.baseInfo;
+          this.$message.success("已删除信息项");
+        });
+    },
+    updateInfo() {
+      this.$http
+        .post(
+          `/project/${this.$route.params.id}/editinfo/${this.editInfoForm._id}`,
+          this.editInfoForm
+        )
+        .then(res => {
+          this.INIT_CURRENT_PROJECT_INFO(res.data);
+          this.$message.success("成功修改信息项");
+        });
+    },
+    toIcons() {
+      window.open("https://element.eleme.cn/#/zh-CN/component/icon", "_blank");
     }
   },
   created() {
-    //TODO:通过axios获取对应ID的项目信息
+    this.updateForm.projectName = this.projectInfo.projectName;
+    this.updateForm.address = this.projectInfo.address;
+    this.updateForm.structuralType = this.projectInfo.structuralType;
+    this.updateForm.openStatus = this.projectInfo.openStatus;
+    this.baseInfo = this.projectInfo.baseInfo;
   }
 };
 </script>
@@ -186,6 +263,9 @@ export default {
     padding: 20px;
     .project-item {
       height: 30px;
+      .edit-item {
+        margin-left: 10px;
+      }
       .item-title {
         font-weight: 300;
       }
@@ -213,6 +293,9 @@ export default {
     text-align: center;
     font-weight: 300;
     min-width: 100px;
+    &:hover {
+      cursor: pointer;
+    }
     i {
       font-size: 25px;
       color: #409eff;
