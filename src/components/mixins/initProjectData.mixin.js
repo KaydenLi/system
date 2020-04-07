@@ -31,7 +31,7 @@ const initProjectData = {
         }
     },
     methods: {
-        $_initIaseInfo(data) {
+        $_initBaseInfo(data) {
             if (data.length === 0) return;
             // 项目基本信息
             this.baseInfo.planesNumber = data.length;
