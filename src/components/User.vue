@@ -3,7 +3,7 @@
     <div class="user-info">
       <div class="left">
         <div class="avatar">
-          <img :src="userInfo.avatar" alt="头像" />
+          <img :src="userInfo.img" alt="头像" />
         </div>
         <p>
           <i class="el-icon-user"></i>
@@ -11,7 +11,7 @@
         </p>
         <p>
           <i class="el-icon-message"></i>
-          &nbsp;{{userInfo.email}}
+          &nbsp;{{userInfo.email||"邮箱待完善"}}
         </p>
         <p>
           <i class="el-icon-mobile-phone"></i>
@@ -38,21 +38,7 @@
             <th class="title">用户住址</th>
             <td>
               <i class="el-icon-place small-screen-show"></i>
-              {{userInfo.address}}
-            </td>
-          </tr>
-          <tr>
-            <th class="title">项目总数</th>
-            <td>
-              <i class="el-icon-medal-1 small-screen-show"></i>
-              {{userInfo.projectsCount}}个我的项目
-            </td>
-          </tr>
-          <tr>
-            <th class="title">可查看项目</th>
-            <td>
-              <i class="el-icon-medal small-screen-show"></i>
-              {{userInfo.viewablesCount}}个可查看项目
+              {{userInfo.address||"地址待完善"}}
             </td>
           </tr>
         </table>
@@ -76,6 +62,7 @@ export default {
 
 <style scoped>
 .user-container {
+  margin-top: 10px;
   display: inline-block;
   text-align: center;
 }
@@ -102,8 +89,8 @@ export default {
   border-left: 1px solid #ebeef5;
 }
 .avatar img {
-  width: 100px;
-  height: 100px;
+  width: 60px;
+  height: 60px;
   border-radius: 10px;
 }
 .title {

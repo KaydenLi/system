@@ -32,6 +32,13 @@ const initProjectData = {
     },
     methods: {
         $_initBaseInfo(data) {
+            this.planes = [];
+            this.sites = [];
+            this.types = [];
+            this.groups = [];
+            this.units = [];
+            this.selectgroup = [];
+            this.selecttype = [];
             if (data.length === 0) return;
             // 项目基本信息
             this.baseInfo.planesNumber = data.length;
