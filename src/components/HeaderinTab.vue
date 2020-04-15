@@ -37,7 +37,6 @@ export default {
 </script>
 <style scoped>
 .container-in-tab {
-  margin: 20px 0;
   position: relative;
   padding: 0 0 10px;
   border-bottom: 1px solid #dcdfe6;
