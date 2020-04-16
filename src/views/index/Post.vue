@@ -13,8 +13,8 @@
           <el-page-header @back="goBack" title="通告列表" :content="post.title"></el-page-header>
           <el-divider></el-divider>
           <div class="release">
-            <p>发布时间：{{post.time}}</p>
-            <p>摘要：{{post.summary}}</p>
+            <p>发布时间：{{post.createTime}}</p>
+            <p>摘要：{{post.digest}}</p>
           </div>
           <div id="content"></div>
         </el-col>
@@ -25,34 +25,30 @@
 </template>
 
 <script>
-import postData from "../../mockData/posts.js";
 export default {
   data() {
     return {
       header: { menu: "通告详情", toPageName: "返回首页", to: "/index" },
-      post: null
+      post: {}
     };
   },
   methods: {
     toList() {
       this.$router.push("/notes");
     },
-    render(content) {
-      var renderTree = document.getElementById("content");
-      window.console.log(renderTree);
-      renderTree.innerHTML = content;
-    },
     goBack() {
       this.$router.push("/notes");
     }
   },
   created() {
-    this.post = postData;
+    this.$http.get(`/post/${this.$route.params.id}`).then(res => {
+      this.post = res.data;
+      var div = document.createElement("div");
+      div.innerHTML = this.post.content;
+      document.getElementById("content").appendChild(div);
+    });
   },
-  mounted() {
-    //window.console.log(this.$route.params.id);
-    this.render(this.post.content);
-  }
+  mounted() {}
 };
 </script>
 

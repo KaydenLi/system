@@ -24,7 +24,7 @@
               >
                 <el-card>
                   <h4>{{note.title}}</h4>
-                  <p>{{note.summary}}</p>
+                  <p>{{note.digest}}</p>
                   <el-button @click="toDetail(note._id)" size="mini" type="primary">查看详情</el-button>
                 </el-card>
               </el-timeline-item>
@@ -39,7 +39,6 @@
 </template>
 
 <script>
-import postData from "../../mockData/notes.js";
 export default {
   data() {
     return {
@@ -54,7 +53,9 @@ export default {
     }
   },
   created() {
-    this.notes = postData;
+    this.$http.get("/post/lists").then(res => {
+      this.notes = res.data;
+    });
   }
 };
 </script>

@@ -19,8 +19,8 @@
         >
           <div class="block">
             <el-carousel indicator-position="outside">
-              <el-carousel-item v-for="item in bannners" :key="item._id">
-                <img class="banner-img" :src="item.url" alt :title="item.title" />
+              <el-carousel-item v-for="item in banners" :key="item._id" :style="item.bgcolor">
+                <img class="banner-img" :src="item.img" :alt="item.title" :title="item.title" />
               </el-carousel-item>
             </el-carousel>
           </div>
@@ -34,14 +34,16 @@
             </el-button>
           </div>
           <div v-if="posts">
-            <div v-for="news in posts.slice(0,5)" :key="news._id">
+            <div v-for="news in posts" :key="news._id">
               <p class="note">
                 <i class="el-icon-caret-right"></i>&nbsp;
                 <el-button
                   type="text"
                   class="note-link"
                   @click="toPostDetail(news._id)"
+                  :title="news.digest"
                 >{{news.title}}</el-button>
+                <span class="note-time">{{news.createTime.slice(0,10)}}</span>
               </p>
             </div>
           </div>
@@ -75,15 +77,12 @@
 </template>
 
 <script>
-import bannerData from "../../mockData/banners.js";
-import postsData from "../../mockData/notes.js";
-import linkData from "../../mockData/links.js";
 export default {
   data() {
     return {
       bannersCount: 5,
       allLinks: [],
-      bannners: [],
+      banners: [],
       posts: []
     };
   },
@@ -101,10 +100,16 @@ export default {
     }
   },
   created() {
-    this.bannersCount = 5;
-    this.posts = postsData;
-    this.allLinks = linkData;
-    this.bannners = bannerData.slice(0, this.bannersCount);
+    // this.posts = postsData;
+    this.$http.get(`/post/list`).then(res => {
+      this.posts = res.data;
+    });
+    this.$http.get(`/banner/list`).then(res => {
+      this.banners = res.data;
+    });
+    this.$http.get(`/link/list`).then(res => {
+      this.allLinks = res.data;
+    });
   }
 };
 </script>
@@ -120,7 +125,6 @@ export default {
   }
   .float-right {
     float: right;
-    font-size: 14px;
   }
 }
 .block {
@@ -137,13 +141,15 @@ export default {
   font-size: 18px;
   .all-notes {
     float: right;
-    font-size: 14px;
   }
 }
 .note {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  &:hover {
+    background-color: #ebeef5;
+  }
   .note-link {
     padding: 0;
     color: #606266;
@@ -151,10 +157,15 @@ export default {
       color: #409eff;
     }
   }
+  .note-time {
+    font-size: 14px;
+    padding-right: 10px;
+    float: right;
+    color: #606266;
+  }
 }
 .placeholder {
   color: #99a9bf;
-  font-size: 14px;
 }
 .el-carousel__item:nth-child(2n) {
   background-color: #99a9bf;
