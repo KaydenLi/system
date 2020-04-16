@@ -150,14 +150,9 @@ export default {
       loginForm.phone = this.model.phone;
       loginForm.password = this.model.password;
       this.$http.post("user/login", this.model).then(res => {
-        window.console.log(res.data);
         this.INIT_USER_INFO(res.data.userInfo);
         localStorage.token = res.data.token;
-        this.$message({
-          message: "登录成功!",
-          type: "success",
-          center: true
-        });
+        this.$message.success("登录成功!");
         this.$router.push("/");
       });
     }
