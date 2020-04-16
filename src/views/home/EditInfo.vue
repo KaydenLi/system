@@ -26,11 +26,11 @@
             <el-form-item label="修改头像">
               <el-upload
                 class="avatar-uploader"
-                :action="$http.defaults.baseURL+'/upload/avatars'"
+                :action="$http.defaults.baseURL+'/upload/img'"
                 :show-file-list="false"
-                :on-success="handleAvatarSuccess"
+                :on-success="afterUpload"
               >
-                <img v-if="model.avatar" :src="model.avatar" class="avatar el-upload" />
+                <img v-if="model.img" :src="model.img" class="avatar el-upload" />
                 <i v-else class="el-icon-plus avatar-uploader-icon el-upload"></i>
               </el-upload>
             </el-form-item>
@@ -62,18 +62,18 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
       showVerifyCode: false,
       disabledChangePhone: true,
       model: {
-        avatar: "",
-        userName: "",
+        img: "",
+        userName: "kayden",
         phone: "",
-        email: "",
-        address: "",
+        email: "kayden@qq.com",
+        address: "华中科技大学",
         verificationCode: ""
       },
       header: {
@@ -110,7 +110,7 @@ export default {
           }
         ],
         address: [
-          { required: true, message: "请输入项目所在地", trigger: "blur" },
+          { required: true, message: "请输入地址", trigger: "blur" },
           {
             min: 6,
             max: 50,
@@ -125,6 +125,7 @@ export default {
     ...mapState(["userInfo"])
   },
   methods: {
+    ...mapMutations(["INIT_USER_INFO"]),
     changePhone() {
       this.disabledChangePhone = false;
       this.showVerifyCode = true;
@@ -132,7 +133,12 @@ export default {
     editUser(rules) {
       this.$refs[rules].validate(valid => {
         if (valid) {
-          alert("submit!");
+          this.$http
+            .post(`/user/update/${this.userInfo._id}`, this.model)
+            .then(res => {
+              this.INIT_USER_INFO(res.data);
+              this.$message.success("信息更新成功");
+            });
         } else {
           return false;
         }
@@ -142,10 +148,13 @@ export default {
     },
     handleAvatarSuccess() {
       this.$message.info(`头像上传成功`);
+    },
+    afterUpload(res) {
+      this.$set(this.model, "img", res.url);
     }
   },
-  mounted() {
-    this.model.avatar = this.userInfo.avatar;
+  created() {
+    this.model.img = this.userInfo.img;
     this.model.userName = this.userInfo.userName;
     this.model.phone = this.userInfo.phone;
     this.model.email = this.userInfo.email;
