@@ -10,7 +10,8 @@ import {
     SET_APPLICATION_STATUS,
     TOOGLE_SIDE_BAR,
     INIT_CURRENT_PROJECT,
-    INIT_CURRENT_PROJECT_INFO
+    INIT_CURRENT_PROJECT_INFO,
+    INIT_3D_DATAS
 } from './mutations-type.js'
 
 export default {
@@ -49,5 +50,32 @@ export default {
     },
     [INIT_CURRENT_PROJECT_INFO](state, projectInfo) {
         state.projectInfo = projectInfo;
+    },
+    [INIT_3D_DATAS](state, data) {
+        state.threeDatas = [];
+        if (data.length === 0) return;
+        data.forEach(planes => {
+            if (planes.length === 0) return;
+            let plane = planes.name;
+            planes.children.forEach(sites => {
+                if (sites.length === 0) return;
+                let site = sites.name;
+                let machineinfo = sites.machineinfo;
+                sites.value.forEach(points => {
+                    let tmp = {};
+                    tmp.ratio = points.ratio;
+                    tmp.name = points.name;
+                    tmp.type = points.type;
+                    tmp.position = points.position;
+                    tmp.unit = points.unit;
+                    tmp.value = points.value[0];
+                    tmp.group = points.group;
+                    tmp.site = site;
+                    tmp.machineinfo = machineinfo;
+                    tmp.plane = plane;
+                    state.threeDatas.push(tmp);
+                });
+            });
+        });
     }
 }
