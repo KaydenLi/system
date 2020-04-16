@@ -4,11 +4,11 @@
       <div class="project-img">
         <el-upload
           class="avatar-uploader"
-          :action="$http.defaults.baseURL+'/upload/avatars'"
+          :action="$http.defaults.baseURL+'/upload/img'"
           :show-file-list="false"
-          :on-success="handleSuccess"
+          :on-success="afterUpload"
         >
-          <img v-if="projectInfo.img" :src="projectInfo.img" class="avatar el-upload" />
+          <img v-if="updateForm.img" :src="updateForm.img" title="点击修改图片" class="avatar el-upload" />
           <i v-else class="el-icon-plus avatar-uploader-icon el-upload"></i>
           <div slot="tip" class="el-upload__tip">点击即可修改项目图片，支持jpg/png文件，建议尺寸为：400*300。</div>
         </el-upload>
@@ -117,7 +117,13 @@
         <el-form-item label="项目名称" label-width="6em">
           <el-input v-model="updateForm.projectName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="项目地址" label-width="6em">
+        <el-form-item label="所在省区" label-width="6em">
+          <el-input v-model="updateForm.province" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="所在县市" label-width="6em">
+          <el-input v-model="updateForm.city" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="详细地址" label-width="6em">
           <el-input v-model="updateForm.address" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="项目结构" label-width="6em">
@@ -155,9 +161,12 @@ export default {
       },
       updateForm: {
         projectName: "",
+        province: "",
+        city: "",
         address: "",
         structuralType: "",
-        openStatus: false
+        openStatus: false,
+        img: ""
       },
       editInfoForm: {},
       openStatusValue: "不开放"
@@ -240,14 +249,30 @@ export default {
     },
     toIcons() {
       window.open("https://element.eleme.cn/#/zh-CN/component/icon", "_blank");
+    },
+    afterUpload(res) {
+      this.$set(this.updateForm, "img", res.url);
+      this.$http
+        .post(`project/${this.$route.params.id}/update`, this.updateForm)
+        .then(res => {
+          this.INIT_CURRENT_PROJECT_INFO(res.data);
+          this.$message.success("图片修改成功");
+        });
     }
   },
   created() {
-    this.updateForm.projectName = this.projectInfo.projectName;
-    this.updateForm.address = this.projectInfo.address;
-    this.updateForm.structuralType = this.projectInfo.structuralType;
-    this.updateForm.openStatus = this.projectInfo.openStatus;
-    this.baseInfo = this.projectInfo.baseInfo;
+    let id = this.$route.params.id;
+    this.$http.get(`project/${id}`).then(res => {
+      this.INIT_CURRENT_PROJECT_INFO(res.data);
+      this.baseInfo = this.projectInfo.baseInfo;
+      this.updateForm.projectName = this.projectInfo.projectName;
+      this.updateForm.province = this.projectInfo.province;
+      this.updateForm.city = this.projectInfo.city;
+      this.updateForm.address = this.projectInfo.address;
+      this.updateForm.structuralType = this.projectInfo.structuralType;
+      this.updateForm.openStatus = this.projectInfo.openStatus;
+      this.updateForm.img = this.projectInfo.img;
+    });
   }
 };
 </script>
@@ -262,7 +287,9 @@ export default {
     display: inline-block;
     padding: 20px;
     .project-item {
-      height: 30px;
+      display: inline;
+      padding-right: 20px;
+      // height: 30px;
       .edit-item {
         margin-left: 10px;
       }
@@ -279,7 +306,8 @@ export default {
     }
   }
   .project-img {
-    display: inline-block;
+    // display: inline-block;
+    text-align: center;
   }
 }
 

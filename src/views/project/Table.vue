@@ -49,7 +49,6 @@
         :filter-method="filterGroups"
         label="所属组"
       ></el-table-column>
-      <el-table-column prop="notes" label="备注"></el-table-column>
     </el-table>
   </div>
 </template>
@@ -71,7 +70,6 @@ export default {
         //     value: "1000MPa",//
         //     ratio: "1.0",//
         //     group:[],
-        //     notes: "无"//
         //   }
       ]
     };
@@ -118,7 +116,6 @@ export default {
           let machineinfo = sites.machineinfo;
           sites.value.forEach(points => {
             let data = {};
-            data.notes = points.notes;
             data.ratio = points.ratio;
             data.name = points.name;
             data.type = points.type;

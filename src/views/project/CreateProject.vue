@@ -123,6 +123,9 @@ export default {
       }
     };
   },
+  components: {
+    // BmLocalSearch
+  },
   methods: {
     getVerificationCode() {
       alert("获取验证码");
@@ -134,7 +137,6 @@ export default {
           this.model.createdTime = date;
           this.model.projectName = this.model.projectName.trim();
           this.$http.post("project/create", this.model).then(res => {
-            window.console.log(res);
             this.$message.success(`新建项目${res.data.projectName}`);
           });
         } else {

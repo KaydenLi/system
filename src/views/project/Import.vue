@@ -1,63 +1,69 @@
 <template>
   <div>
-    <span class="upload-title">选择上传文件类型：</span>
-    <el-select size="mini" v-model="upType">
-      <el-option v-for="up in ups" :key="up" :label="up" :value="up"></el-option>
-    </el-select>
-    <el-divider></el-divider>
-    <div v-if="flag">
-      <el-form label-width="100px">
-        <el-form-item label="iframe地址">
-          <el-input class="input" size="mini" v-model="frameUrl"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" size="mini">确 定</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-    <div v-if="!flag">
-      <el-upload
-        class="upload-demo"
-        ref="upload"
-        action
-        :on-preview="handlePreview"
-        :on-remove="handleRemove"
-        :file-list="fileList"
-        :auto-upload="false"
-      >
-        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-        <el-button
-          style="margin-left: 10px;"
-          size="small"
-          type="success"
-          @click="submitUpload"
-        >上传到服务器</el-button>
-        <div slot="tip" class="el-upload__tip">只能上传obj/mtl文件，且不超过50MB</div>
-      </el-upload>
-    </div>
+    <el-upload
+      :limit="1"
+      :on-exceed="handleExceed"
+      class="upload-demo"
+      ref="uploadobj"
+      :action="$http.defaults.baseURL+'/upload/obj'"
+      :on-success="afterUploadObj"
+    >
+      <el-button slot="trigger" size="small" type="primary">选取obj文件</el-button>
+      <div slot="tip" class="el-upload__tip">只能上传obj文件</div>
+    </el-upload>
+    <el-upload
+      :limit="1"
+      :on-exceed="handleExceed"
+      class="upload-demo"
+      ref="uploadmtl"
+      :action="$http.defaults.baseURL+'/upload/mtl'"
+      :on-success="afterUploadMtl"
+    >
+      <el-button slot="trigger" size="small" type="primary">选取mtl文件</el-button>
+      <div slot="tip" class="el-upload__tip">只能上传mtl文件</div>
+    </el-upload>
+    <el-button size="small" type="success" @click="submitUpload">上传文件</el-button>
   </div>
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {
-      fileList: [],
-      ups: ["iframe上传", "obj文件上传"],
-      upType: "iframe上传"
+      obj: "",
+      mtl: "",
+      objlist: [],
+      mtllist: []
     };
   },
-  computed: {
-    flag: function() {
-      return this.upType === this.ups[0] ? true : false;
-    }
-  },
   methods: {
-    submitUpload() {
-      this.$refs.upload.submit();
+    ...mapMutations(["INIT_CURRENT_PROJECT_INFO"]),
+    async submitUpload() {
+      let model = {};
+      model.obj = this.obj;
+      model.mtl = this.mtl;
+      this.$http
+        .post(`/project/${this.$route.params.id}/updatemodel`, model)
+        .then(res => {
+          window.console.log(res.data);
+          this.INIT_CURRENT_PROJECT_INFO(res.data);
+          this.$refs.uploadmtl.clearFiles();
+          this.$refs.uploadobj.clearFiles();
+          this.$message.success("文件已加载到项目");
+        });
     },
-    handleRemove() {},
-    handlePreview() {}
+    afterUploadObj(res) {
+      this.obj = res.url;
+      this.$message.success("obj文件上传成功");
+    },
+    afterUploadMtl(res) {
+      this.mtl = res.url;
+      this.$message.success("mtl文件上传成功");
+    },
+    handleExceed() {
+      this.$message.error("每次只能上传一个文件");
+    }
   }
 };
 </script>
@@ -68,5 +74,8 @@ export default {
 }
 .upload-title {
   padding-bottom: 20px;
+}
+.upload-demo {
+  margin-bottom: 20px;
 }
 </style>
