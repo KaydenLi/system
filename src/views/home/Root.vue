@@ -29,6 +29,33 @@
               class="el-icon-close colse-btn"
             ></i>
           </div>
+          <!-- start baidu map -->
+          <baidu-map
+            ak="uo6L73tzaIMlLDgXZiw1xXM6ntgBL8EQ"
+            class="map"
+            center="湖北省武汉市"
+            @ready="showPoint"
+          >
+            <div v-if="projects.length>0">
+              <bm-local-search
+                v-for="project in projects"
+                :key="project._id"
+                :keyword="project.address"
+                :auto-viewport="true"
+                :location="project.province || ''+project.city||''"
+                :selectFirstResult="true"
+                :pageCapacity="1"
+                :panel="false"
+              ></bm-local-search>
+            </div>
+            <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
+            <bm-geolocation
+              anchor="BMAP_ANCHOR_BOTTOM_RIGHT"
+              :showAddressBar="true"
+              :autoLocation="true"
+            ></bm-geolocation>
+          </baidu-map>
+          <!-- end baidu map -->
           <el-tabs type="border-card" :value="activeTab" style="min-height:450px;">
             <!-- 我的项目标签页 -->
             <el-tab-pane name="first">
@@ -41,12 +68,14 @@
                 :data="projects"
                 :empty-text="emptyText.myprojects"
                 v-loading="loading.projectsLoading"
+                :row-style="{height:0+'px'}"
+                :cell-style="{padding:4+'px'}"
               >
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column label="项目名称" prop="projectName"></el-table-column>
                 <el-table-column label="创建日期" prop="createdTime" :formatter="formatDate"></el-table-column>
-                <el-table-column label="项目地址" prop="address"></el-table-column>
-                <el-table-column label="操作" fixed="right">
+                <el-table-column label="项目地址" prop="address" :formatter="formatAddress"></el-table-column>
+                <el-table-column label="操作" fixed="right" width="80">
                   <template slot-scope="scope">
                     <el-button type="primary" size="mini" @click="toDetail(scope.row._id)">详情</el-button>
                   </template>
@@ -65,6 +94,8 @@
                 :data="applicationProjects.toQuest"
                 :empty-text="emptyText.requests"
                 v-loading="loading.applicationLoading"
+                :row-style="{height:0+'px'}"
+                :cell-style="{padding:4+'px'}"
               >
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column
@@ -89,6 +120,8 @@
                 :data="applicationProjects.getAuthed"
                 :empty-text="emptyText.viewables"
                 v-loading="loading.applicationLoading"
+                :row-style="{height:0+'px'}"
+                :cell-style="{padding:4+'px'}"
               >
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column
@@ -120,6 +153,8 @@
                 :data="authProjects.toCheck"
                 :empty-text="emptyText.checks"
                 v-loading="loading.authLoading"
+                :row-style="{height:0+'px'}"
+                :cell-style="{padding:4+'px'}"
               >
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column
@@ -140,6 +175,8 @@
                 :data="authProjects.getChecked"
                 :empty-text="emptyText.opens"
                 v-loading="loading.authLoading"
+                :row-style="{height:0+'px'}"
+                :cell-style="{padding:4+'px'}"
               >
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column
@@ -156,12 +193,19 @@
               </el-table>
             </el-tab-pane>
 
-            <!-- 用户中心标签页 -->
+            <!-- 用户中心标签页  -->
             <el-tab-pane name="fourth">
               <span slot="label" @click="SET_ACTIVE_TAB(`fourth`)">
                 <i class="el-icon-user"></i> 用户中心
               </span>
               <Header :header="centerHeader"></Header>
+              <el-alert
+                v-if="fullfill"
+                class="warning"
+                title="你有信息未完善，点击'编辑资料'完善个人信息"
+                type="warning"
+                show-icon
+              ></el-alert>
               <User :userInfo="userInfo"></User>
             </el-tab-pane>
           </el-tabs>
@@ -179,6 +223,11 @@ import { mapState, mapMutations } from "vuex";
 //导入Header，在标签页面内作为页面标题使用；导入user标签作为用户资料卡
 import Header from "../../components/HeaderinTab.vue";
 import User from "../../components/User.vue";
+// 导入百度地图组件
+import BaiduMap from "vue-baidu-map/components/map/Map.vue";
+import BmGeolocation from "vue-baidu-map/components/controls/Geolocation.vue";
+import BmNavigation from "vue-baidu-map/components/controls/Navigation.vue";
+import BmLocalSearch from "vue-baidu-map/components/search/LocalSearch.vue";
 //mockData
 import authProjectsData from "../../mockData/authProjects.js";
 import applicationProjectsData from "../../mockData/applicationProjects.js";
@@ -187,11 +236,11 @@ export default {
     return {
       //表格内容为空时的占位符
       emptyText: {
-        myprojects: `您还没有创建任何项目。`,
-        requests: "没有正在进行的请求。",
-        viewables: "您还没有可查看的开放项目。",
-        checks: "暂无任何授权请求。",
-        opens: "您还没有开放任何项目。"
+        myprojects: "您还没有创建任何项目",
+        requests: "没有正在进行的请求",
+        viewables: "您还没有可查看的开放项目",
+        checks: "暂无任何授权请求",
+        opens: "您还没有开放任何项目"
       },
       //用户请求授权表格
       toAuthTable: [
@@ -280,7 +329,11 @@ export default {
   },
   components: {
     Header,
-    User
+    User,
+    BaiduMap,
+    BmGeolocation,
+    BmNavigation,
+    BmLocalSearch
   },
   computed: {
     ...mapState([
@@ -290,7 +343,12 @@ export default {
       "authProjects",
       "applicationProjects",
       "activeTab"
-    ])
+    ]),
+    fullfill: function() {
+      if (this.userInfo.email === "") return true;
+      if (this.userInfo.address === "") return true;
+      return false;
+    }
   },
   methods: {
     ...mapMutations([
@@ -308,6 +366,15 @@ export default {
       } else {
         return;
       }
+    },
+    formatAddress(row) {
+      return (
+        (row.province == null ? "" : row.province) +
+        " " +
+        (row.city == null ? "" : row.city) +
+        " " +
+        row.address
+      );
     },
     toDetail(id) {
       this.$router.push(`/project/${id}/index`);
@@ -336,7 +403,7 @@ export default {
       }
       this.loading.projectsLoading = true;
       this.$http.get(`project/${this.userInfo._id}/list`).then(res => {
-        this.INIT_PROJECTS(res.data);
+        this.INIT_PROJECTS(res.data.projects);
         this.loading.projectsLoading = false;
       });
     },
@@ -364,12 +431,46 @@ export default {
         this.SET_AUTH_STATUS();
         //TODO:用axios获取数据，并进行初始化
       }, 1000);
-    }
+    },
+    toMyProject() {
+      alert("click");
+    },
+    toViewProject() {
+      alert("click");
+    },
+    showPoint() {}
   },
   created() {
     this.getProjects();
     // this.getApplicationProject();
     // this.getAuthProject();
+  },
+  mounted() {
+    // var map = new BMap.Map("container");
+    // var localSearch = new BMap.LocalSearch(map);
+    // function searchByStationName() {
+    //   $("#result_").html(
+    //     "<tr><td>查找名称</td><td>结果名称</td><td>地址</td><td>经度</td><td>维度</td></tr>"
+    //   );
+    //   var keyword = $("#text_").val();
+    //   var list = keyword.split(",");
+    //   for (var i = 0; i < list.length; i++) {
+    //     map.clearOverlays(); //清空原来的标注
+    //     localSearch.setSearchCompleteCallback(function(searchResult) {
+    //       var poi = searchResult.getPoi(0);
+    //       var html = "";
+    //       if (poi) {
+    //         html += "<tr><td>" + searchResult.keyword;
+    //         html += "</td><td>" + poi.title;
+    //         html += "</td><td>" + poi.address;
+    //         html += "</td><td>" + poi.point.lng;
+    //         html += "</td><td>" + poi.point.lat + "</td></tr>";
+    //       }
+    //       $("#result_").append(html);
+    //     });
+    //     localSearch.search(list[i]);
+    //   }
+    // }
   }
 };
 </script>
@@ -394,7 +495,6 @@ export default {
   min-height: 100vh;
   .welcome {
     font-size: 14px;
-    margin: 0 0 20px;
     height: 3em;
     line-height: 3em;
     text-align: center;
@@ -414,8 +514,27 @@ export default {
       }
     }
   }
+  .map {
+    width: 100%;
+    height: 300px;
+    margin: 20px 0;
+    // border: 1px solid red;
+    border-radius: 5px;
+  }
+  .project {
+    // border: 1px solid #67c23a;
+    // border-radius: 5px;
+    margin: 20px 0;
+    padding: 10px 10px 40px;
+    .user-onfo {
+      margin: 20px 0;
+    }
+  }
   .top-margin {
     margin-top: 80px;
+  }
+  .warning {
+    margin: 10px 0;
   }
 }
 </style>
