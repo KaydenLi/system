@@ -11,13 +11,15 @@
     }
     .item-header {
       color: #909399;
-      .link,
-      .deco {
-        color: #409eff;
-        &:hover {
-          cursor: pointer;
-        }
+    }
+    .link {
+      color: #409eff;
+      &:hover {
+        cursor: pointer;
       }
+    }
+    .deco{
+      color: #909399;
     }
     .no-data {
       color: #909399;
