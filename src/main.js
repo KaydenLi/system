@@ -38,6 +38,11 @@ Vue.prototype.$http.interceptors.response.use(res => {
     //401，未登录，路由到登录页面
     router.push('/login')
   }
+  //根据状态码进行处理
+  if (err.response.status === 422) {
+    //401，未登录，路由到登录页面
+    router.push('/')
+  }
   return Promise.reject(err)
 })
 
