@@ -6,8 +6,6 @@ import {
     INIT_APPLICATION_ABOUT_PROJECTS,
     INIT_POSTS,
     SET_ACTIVE_TAB,
-    SET_AUTH_STATUS,
-    SET_APPLICATION_STATUS,
     TOOGLE_SIDE_BAR,
     INIT_CURRENT_PROJECT,
     INIT_CURRENT_PROJECT_INFO,
@@ -25,22 +23,35 @@ export default {
         state.userInfo.welcomeFlag = false;
     },
     [INIT_AUTH_ABOUT_PROJECTS](state, projects) {
-        state.authProjects = projects;
+        if (projects.toCheck == null) {
+            state.authProjects.getChecked = projects.getChecked;
+        }
+        else if (projects.getChecked == null) {
+            state.authProjects.toCheck = projects.toCheck;
+        } else {
+            state.authProjects.toCheck = projects.toCheck;
+            state.authProjects.getChecked = projects.getChecked;
+
+        }
     },
     [INIT_APPLICATION_ABOUT_PROJECTS](state, projects) {
-        state.applicationProjects = projects;
+        if (projects.toQuest == null) {
+            state.applicationProjects.getAuthed = projects.getAuthed;
+        }
+        else if (projects.getAuthed == null) {
+            state.applicationProjects.toQuest = projects.toQuest;
+        }
+        else {
+            state.applicationProjects.toQuest = projects.toQuest;
+            state.applicationProjects.getAuthed = projects.getAuthed;
+
+        }
     },
     [INIT_POSTS](state, posts) {
         state.posts = posts;
     },
     [SET_ACTIVE_TAB](state, activeValue) {
         state.activeTab = activeValue;
-    },
-    [SET_AUTH_STATUS](state, status = true) {
-        state.authProjects.updated = status;
-    },
-    [SET_APPLICATION_STATUS](state, status = true) {
-        state.applicationProjects.updated = status;
     },
     [TOOGLE_SIDE_BAR](state) {
         state.toogleSideBar = !state.toogleSideBar;

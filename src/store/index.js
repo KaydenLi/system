@@ -29,18 +29,12 @@ const state = {
         // }
     ],
     authProjects: {//授权项目
-        _id: "",
-        userName: "",
         getChecked: [],
         toCheck: [],
-        updated: false
     },
     applicationProjects: {//申请项目
-        _id: "",
-        userName: "",
-        getCheckedAuthed: [],
+        getAuthed: [],
         toQuest: [],
-        updated: false
     },
     posts: [],//首页通告列表
     activeTab: "first",//默认活动tab页

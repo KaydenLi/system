@@ -26,6 +26,13 @@ const routes = [
     meta: { isPublic: true }
   },
   {
+    //轮播图详情页面
+    path: '/banner/:id',
+    name: 'banner',
+    component: () => import('../views/index/Banner.vue'),
+    meta: { isPublic: true }
+  },
+  {
     //注册页面
     path: '/register',
     name: 'register',
@@ -149,6 +156,12 @@ const routes = [
             path: 'detection',
             name: 'detection',
             component: () => import('../views/project/Detection.vue')
+          },
+          {
+            //具体项目全景监测页面
+            path: 'clips',
+            name: 'clips',
+            component: () => import('../views/project/ClipPlanes.vue')
           },
           {
             //导入模型页面
