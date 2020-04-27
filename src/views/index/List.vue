@@ -27,7 +27,7 @@
             <el-table-column prop="projectName" label="项目名称"></el-table-column>
             <el-table-column prop="createdTime" :formatter="formatTime" label="创建日期" width="180"></el-table-column>
             <el-table-column prop="watchersId" :formatter="formatWatcher" label="查看人数" width="180"></el-table-column>
-            <el-table-column prop="address" label="地址"></el-table-column>
+            <el-table-column prop="address" :formatter="formatAddress" label="地址"></el-table-column>
             <el-table-column label="操作" width="180">
               <template slot-scope="scope">
                 <el-button size="mini" type="text" @click="getAuthorization(scope.row._id)">查看</el-button>
@@ -100,6 +100,9 @@ export default {
       } else {
         return 0;
       }
+    },
+    formatAddress(row) {
+      return (row.province || "") + (row.city || "") + (row.address || "");
     },
     currentPageChange(val) {
       this.pageSize = this.pageSize;

@@ -17,13 +17,20 @@
           :lg="{span:14,offset:5}"
           :xl="{span:14,offset:5}"
         >
-          <div class="block">
+          <div class="block" v-if="banners.length">
             <el-carousel indicator-position="outside">
               <el-carousel-item v-for="item in banners" :key="item._id" :style="item.bgcolor">
-                <img class="banner-img" :src="item.img" :alt="item.title" :title="item.title" />
+                <img
+                  class="banner-img"
+                  @click="toBannerDetail(item._id)"
+                  :src="item.img"
+                  :alt="item.title"
+                  :title="item.title"
+                />
               </el-carousel-item>
             </el-carousel>
           </div>
+          <div v-else class="placeholder welcome">欢迎使用结构三维可视化监测系统</div>
           <div class="section-header">
             <span>
               <i class="el-icon-microphone"></i>&nbsp;公告通知
@@ -33,7 +40,7 @@
               <i class="el-icon-position"></i>
             </el-button>
           </div>
-          <div v-if="posts">
+          <div v-if="posts.length">
             <div v-for="news in posts" :key="news._id">
               <p class="note">
                 <i class="el-icon-caret-right"></i>&nbsp;
@@ -56,7 +63,7 @@
               <i class="el-icon-link"></i> 相关链接
             </span>
           </div>
-          <div v-if="allLinks">
+          <div v-if="allLinks.length">
             <el-link
               v-for="link in allLinks"
               :key="link._id"
@@ -67,7 +74,7 @@
             >{{link.title}}</el-link>
           </div>
           <div v-else class="placeholder">
-            <p>没有相关链接推荐</p>
+            <p>暂时没有相关链接</p>
           </div>
         </el-col>
       </el-row>
@@ -97,10 +104,13 @@ export default {
     toPostDetail(id) {
       let path = "/notes/" + id;
       this.$router.push(path);
+    },
+    toBannerDetail(id) {
+      let path = "/banner/" + id;
+      this.$router.push(path);
     }
   },
   created() {
-    // this.posts = postsData;
     this.$http.get(`/post/list`).then(res => {
       this.posts = res.data;
     });
@@ -127,12 +137,21 @@ export default {
     float: right;
   }
 }
+.el-main{
+  min-height: 60vh;
+}
 .block {
   height: 300px;
   text-align: center;
   .banner-img {
     height: 100%;
+    &:hover {
+      cursor: pointer;
+    }
   }
+}
+.welcome{
+  margin: 40px;
 }
 .section-header {
   margin-top: 10px;
@@ -165,6 +184,8 @@ export default {
   }
 }
 .placeholder {
+  text-align: center;
+  font-weight: 200;
   color: #99a9bf;
 }
 .el-carousel__item:nth-child(2n) {

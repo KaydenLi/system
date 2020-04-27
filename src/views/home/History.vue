@@ -13,47 +13,66 @@
           <el-collapse accordion v-if="list.length>0">
             <el-collapse-item v-for="item in list" :key="item._id">
               <template slot="title">
-                <i v-if="item.status==='waitting'" class="el-icon-warning-outline info-icon"></i>
-                <i v-else-if="item.status==='fail'" class="el-icon-circle-close danger-icon"></i>
+                <i v-if="item.status==='WAIT'" class="el-icon-warning-outline info-icon"></i>
+                <i v-else-if="item.status==='REFUSE'" class="el-icon-circle-close danger-icon"></i>
+                <i v-else-if="item.status==='CANCEL'" class="el-icon-remove-outline danger-icon"></i>
                 <i v-else class="el-icon-circle-check success-icon"></i>
                 您申请查看
-                <span class="deco">{{item.userName}}</span>创建的项目&nbsp;
-                <span class="deco">{{item.projectName}}</span>
+                <span class="deco">{{item.userInfo[0].userName||"其他用户"}}</span>创建的项目：
+                <span class="deco">{{item.projectInfo[0].projectName}}</span>
               </template>
               <p>
                 <span class="item-header">申请账号：</span>
-                <span @click="chekUser(item.user_id)" class="link">{{item.userName}}</span>
+                <span
+                  @click="chekUser(item.user_id)"
+                  title="点击查看用户信息"
+                  class="link"
+                >{{item.userInfo[0].userName}}</span>
               </p>
               <p>
                 <span class="item-header">项目名称：</span>
-                <span @click="checkProject(item.project_id)" class="link">{{item.projectName}}</span>
+                <span
+                  @click="checkProject(item.project_id)"
+                  class="link"
+                  title="点击查看项目信息"
+                >{{item.projectInfo[0].projectName}}</span>
               </p>
               <p>
                 <span class="item-header">项目地址：</span>
-                {{item.address}}
+                {{(item.projectInfo[0].province||"")+" "+(item.projectInfo[0].city||"")+" "+(item.projectInfo[0].address||"")}}
               </p>
               <p>
                 <span class="item-header">申请时间：</span>
-                {{item.date}}
+                {{new Date(item.createdTime)}}
               </p>
 
               <!-- 授权状态与授权日期 -->
-              <div v-if="item.status==='waitting'">
+              <div v-if="item.status==='WAIT'">
                 <p>
                   <span class="item-header">授权状态：</span>
                   等待授权
                 </p>
-                <p v-if="item.authdate">
+                <p v-if="item.authDate">
                   <span class="item-header">授权日期：</span>
                   等待授权
                 </p>
               </div>
-              <div v-else-if="item.status==='fail'">
+              <div v-else-if="item.status==='RESOLVE'">
+                <p>
+                  <span class="item-header">授权状态：</span>
+                  已授权
+                </p>
+                <p v-if="item.authDate">
+                  <span class="item-header">授权日期：</span>
+                  {{new Date(item.authDate) || ""}}
+                </p>
+              </div>
+              <div v-else-if="item.status==='REFUSE'">
                 <p>
                   <span class="item-header">授权状态：</span>
                   已被拒绝授权
                 </p>
-                <p v-if="item.authdate">
+                <p v-if="item.authDate">
                   <span class="item-header">授权日期：</span>
                   已被拒绝授权
                 </p>
@@ -61,26 +80,17 @@
               <div v-else>
                 <p>
                   <span class="item-header">授权状态：</span>
-                  已获得授权
+                  已取消申请
                 </p>
-                <p v-if="item.authdate">
+                <p v-if="item.authDate">
                   <span class="item-header">授权日期：</span>
-                  {{item.authdate}}
+                  已取消申请
                 </p>
               </div>
               <!-- 授权状态与授权日期 -->
               <p>
                 <span class="item-header">申请理由：</span>
                 {{item.description}}
-              </p>
-              <p v-if="item.status==='waitting'">
-                <el-button type="danger" size="mini" @click="cancelQuest(item._id)">取消申请</el-button>
-              </p>
-              <p v-if="item.status==='success'">
-                <el-button type="danger" size="mini" @click="deleteItem(item._id)">删除记录</el-button>
-              </p>
-              <p v-if="item.status==='fail'">
-                <el-button type="danger" size="mini" @click="deleteItem(item._id)">删除记录</el-button>
               </p>
             </el-collapse-item>
           </el-collapse>
@@ -96,7 +106,6 @@
 </template>
 
 <script>
-import listData from "../../mockData/applicationProjects.js";
 export default {
   data() {
     return {
@@ -110,58 +119,17 @@ export default {
     },
     checkProject(id) {
       this.$router.push(`/project/${id}/show`);
-    },
-    cancelQuest(id) {
-      //TODO:数据库操作
-      window.console.log("接受" + id);
-      this.$confirm("确定取消该申请吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "已取消该申请!"
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消"
-          });
-        });
-    },
-    deleteItem(id) {
-      //TODO:数据库操作
-      window.console.log("接受" + id);
-      this.$confirm("确定删除该申请吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "已删除该申请!"
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消"
-          });
-        });
     }
   },
   created() {
-    //TODO:获取数据
-    this.list = listData.toQuest.concat(listData.getAuthed);
-    // this.list = [];
+    this.$http.get("apply/applylist").then(res => {
+      this.list = res.data;
+      window.console.log(res.data);
+    });
   }
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 @import "../../assets/styles/item.scss";
 </style>

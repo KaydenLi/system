@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-tabs type="border-card">
+    <el-tabs type="border-card" :value="importSensor">
       <el-tab-pane v-for="(module,index) in project" :key="module._id">
         <span slot="label">
           <i class="el-icon-files"></i>
@@ -50,7 +50,7 @@
                 <el-table-column prop="name" label="测点编号" width="120"></el-table-column>
                 <el-table-column prop="type" label="测值类型" width="80"></el-table-column>
                 <el-table-column prop="value[0]" label="当前值" width="120"></el-table-column>
-                <el-table-column prop="limit" label="设计限值" width="120"></el-table-column>
+                <el-table-column prop="threshold" label="设计限值" width="120"></el-table-column>
                 <el-table-column prop="unit" label="单位" width="80"></el-table-column>
                 <el-table-column prop="initialError" label="初值" width="80"></el-table-column>
                 <el-table-column prop="ratio" label="灵敏系数" width="120"></el-table-column>
@@ -193,7 +193,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="设计限值" label-width="80px">
-          <el-input v-model="pointForm.limit"></el-input>
+          <el-input v-model="pointForm.threshold"></el-input>
         </el-form-item>
         <el-form-item label="灵敏系数" label-width="80px">
           <el-input v-model="pointForm.ratio"></el-input>
@@ -282,12 +282,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="测值单位" label-width="80px">
-          <el-select
-            v-model="editPointForm.unit"
-            filterable
-            allow-create
-            default-first-option
-          >
+          <el-select v-model="editPointForm.unit" filterable allow-create default-first-option>
             <el-option v-for="item in units" :key="item" :value="item" :lable="item"></el-option>
           </el-select>
         </el-form-item>
@@ -308,8 +303,8 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="设计限值" label-width="80px">
-          <el-input v-model="editPointForm.limit"></el-input>
+        <el-form-item label="阈值" label-width="80px">
+          <el-input v-model="editPointForm.threshold"></el-input>
         </el-form-item>
         <el-form-item label="设备初值" label-width="80px">
           <el-input v-model="editPointForm.initialError"></el-input>
@@ -333,6 +328,7 @@ import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
+      importSensor: "importSensor",
       limitUpload: 1,
       fileTemp: null,
       file: null,
@@ -359,7 +355,7 @@ export default {
         type: "应力",
         unit: "MPa",
         group: [],
-        limit: "1000",
+        threshold: "1000",
         ratio: "1.0",
         initialError: "0"
       },
@@ -387,7 +383,7 @@ export default {
         type: "应力",
         unit: "MPa",
         group: [],
-        limit: "1000",
+        threshold: "1000",
         ratio: "1.0"
       },
       index: { planeIndex: -1, siteIndex: -1, pointIndex: -1 }
@@ -820,7 +816,7 @@ export default {
       this.editPointForm.type = point.type;
       this.editPointForm.unit = point.unit;
       this.editPointForm.group = point.group;
-      this.editPointForm.limit = point.limit;
+      this.editPointForm.threshold = point.threshold;
       this.editPointForm.ratio = point.ratio;
       this.editPointForm.initialError = point.initialError;
     }

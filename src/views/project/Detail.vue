@@ -16,6 +16,9 @@
             <el-menu-item index="index">
               <i class="menu-item-icon el-icon-minus"></i>基本信息
             </el-menu-item>
+            <el-menu-item index="import">
+              <i class="menu-item-icon el-icon-minus"></i>导入模型
+            </el-menu-item>
             <el-menu-item index="config">
               <i class="menu-item-icon el-icon-minus"></i>测点布置
             </el-menu-item>
@@ -35,13 +38,13 @@
           <el-submenu index="2">
             <template slot="title">
               <i class="el-icon-view"></i>
-              <span class="menu-title">全景可视化</span>
+              <span class="menu-title">图形可视化</span>
             </template>
             <el-menu-item index="detection">
-              <i class="menu-item-icon el-icon-minus"></i>监测系统
+              <i class="menu-item-icon el-icon-minus"></i>全景查看
             </el-menu-item>
-            <el-menu-item index="import">
-              <i class="menu-item-icon el-icon-minus"></i>导入模型
+            <el-menu-item index="clips">
+              <i class="menu-item-icon el-icon-minus"></i>局部查看
             </el-menu-item>
           </el-submenu>
           <el-submenu index="3">
@@ -58,9 +61,9 @@
             <el-menu-item index="lifemethod">
               <i class="menu-item-icon el-icon-minus"></i>剩余寿命评估
             </el-menu-item>
-            <el-menu-item index="record">
+            <!-- <el-menu-item index="record">
               <i class="menu-item-icon el-icon-minus"></i>历史评估结果
-            </el-menu-item>
+            </el-menu-item> -->
             <el-menu-item index="rules">
               <i class="menu-item-icon el-icon-minus"></i>自定义规则
             </el-menu-item>
@@ -123,8 +126,15 @@ export default {
   },
   created() {
     let id = this.$route.params.id;
-    this.$http.get(`project/${id}`).then(res => {
-      this.INIT_CURRENT_PROJECT_INFO(res.data);
+    this.$http.get(`project/${id}/operation`).then(res => {
+      if (res.data === true) {
+        this.$http.get(`project/${id}`).then(res => {
+          this.INIT_CURRENT_PROJECT_INFO(res.data);
+        });
+      } else {
+        this.$message.info("管理员未授权使用");
+        this.$router.push("/");
+      }
     });
   }
 };

@@ -256,7 +256,6 @@ export default {
           });
         }
       });
-      // window.console.log(this.allPlanePoints);
       // 绘制图表到div#id里面
       this.$nextTick(() => {
         this.containerId.forEach(id => {
@@ -309,9 +308,6 @@ export default {
                     this.containerId.push(points.type);
                   }
                 }
-                // if (this.containerId.indexOf(points.type) === -1) {
-                //   this.containerId.push(points.type);
-                // }
               });
             }
           });

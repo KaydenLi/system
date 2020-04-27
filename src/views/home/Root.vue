@@ -30,31 +30,33 @@
             ></i>
           </div>
           <!-- start baidu map -->
-          <baidu-map
-            ak="uo6L73tzaIMlLDgXZiw1xXM6ntgBL8EQ"
-            class="map"
-            center="湖北省武汉市"
-            @ready="showPoint"
-          >
-            <div v-if="projects.length>0">
-              <bm-local-search
-                v-for="project in projects"
-                :key="project._id"
-                :keyword="project.address"
-                :auto-viewport="true"
-                :location="project.province || ''+project.city||''"
-                :selectFirstResult="true"
-                :pageCapacity="1"
-                :panel="false"
-              ></bm-local-search>
-            </div>
-            <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
-            <bm-geolocation
-              anchor="BMAP_ANCHOR_BOTTOM_RIGHT"
-              :showAddressBar="true"
-              :autoLocation="true"
-            ></bm-geolocation>
-          </baidu-map>
+          <keep-alive>
+            <baidu-map
+              ak="uo6L73tzaIMlLDgXZiw1xXM6ntgBL8EQ"
+              class="map"
+              center="湖北省武汉市"
+              @ready="showPoint"
+            >
+              <div v-if="projects.length>0">
+                <bm-local-search
+                  v-for="project in projects"
+                  :key="project._id"
+                  :keyword="project.address"
+                  :auto-viewport="true"
+                  :location="project.province || ''+project.city||''"
+                  :selectFirstResult="true"
+                  :pageCapacity="1"
+                  :panel="false"
+                ></bm-local-search>
+              </div>
+              <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
+              <bm-geolocation
+                anchor="BMAP_ANCHOR_BOTTOM_RIGHT"
+                :showAddressBar="true"
+                :autoLocation="true"
+              ></bm-geolocation>
+            </baidu-map>
+          </keep-alive>
           <!-- end baidu map -->
           <el-tabs type="border-card" :value="activeTab" style="min-height:450px;">
             <!-- 我的项目标签页 -->
@@ -75,9 +77,15 @@
                 <el-table-column label="项目名称" prop="projectName"></el-table-column>
                 <el-table-column label="创建日期" prop="createdTime" :formatter="formatDate"></el-table-column>
                 <el-table-column label="项目地址" prop="address" :formatter="formatAddress"></el-table-column>
-                <el-table-column label="操作" fixed="right" width="80">
+                <el-table-column label="操作" fixed="right" width="150">
                   <template slot-scope="scope">
-                    <el-button type="primary" size="mini" @click="toDetail(scope.row._id)">详情</el-button>
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      :disabled="!scope.row.operationFlag"
+                      @click="toDetail(scope.row._id)"
+                    >详情</el-button>
+                    <el-button type="danger" size="mini" @click="deleteProject(scope.row._id)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -100,11 +108,11 @@
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column
                   v-for="item in toAuthTable"
-                  :key="item.projectName"
+                  :key="item._id"
                   :prop="item.prop"
                   :label="item.label"
                 ></el-table-column>
-                <el-table-column label="操作" fixed="right">
+                <el-table-column label="操作" fixed="right" width="100">
                   <template slot-scope="scope">
                     <el-button
                       type="primary"
@@ -126,16 +134,17 @@
                 <el-table-column type="index" label="序号" :index="1" width="100px"></el-table-column>
                 <el-table-column
                   v-for="item in viewablesTable"
-                  :key="item.projectName"
+                  :key="item._id"
                   :prop="item.prop"
                   :label="item.label"
                 ></el-table-column>
-                <el-table-column label="操作" fixed="right">
+                <el-table-column label="操作" fixed="right" width="100">
                   <template slot-scope="scope">
                     <el-button
+                      :disabled="!scope.row.projectInfo[0].openStatus"
                       size="mini"
                       type="primary"
-                      @click="toViewableDetail(scope.row._id)"
+                      @click="toViewableDetail(scope.row.project_id)"
                     >查看</el-button>
                   </template>
                 </el-table-column>
@@ -163,7 +172,7 @@
                   :prop="item.prop"
                   :label="item.label"
                 ></el-table-column>
-                <el-table-column label="操作" fixed="right">
+                <el-table-column label="操作" fixed="right" width="100">
                   <template slot-scope="scope">
                     <el-button type="primary" size="mini" @click="toAuthDetail(scope.row._id)">操作</el-button>
                   </template>
@@ -185,7 +194,7 @@
                   :prop="item.prop"
                   :label="item.label"
                 ></el-table-column>
-                <el-table-column label="操作" fixed="right">
+                <el-table-column label="操作" fixed="right" width="100">
                   <template slot-scope="scope">
                     <el-button type="primary" size="mini" @click="toDetail(scope.row._id)">查看</el-button>
                   </template>
@@ -228,9 +237,6 @@ import BaiduMap from "vue-baidu-map/components/map/Map.vue";
 import BmGeolocation from "vue-baidu-map/components/controls/Geolocation.vue";
 import BmNavigation from "vue-baidu-map/components/controls/Navigation.vue";
 import BmLocalSearch from "vue-baidu-map/components/search/LocalSearch.vue";
-//mockData
-import authProjectsData from "../../mockData/authProjects.js";
-import applicationProjectsData from "../../mockData/applicationProjects.js";
 export default {
   data() {
     return {
@@ -244,26 +250,30 @@ export default {
       },
       //用户请求授权表格
       toAuthTable: [
-        { prop: "projectName", label: "项目名称" },
-        { prop: "project_id", label: "项目ID" },
-        { prop: "date", label: "申请日期" }
+        { prop: "projectInfo[0].projectName", label: "项目名称" },
+        { prop: "createdTime", label: "申请日期" }
       ],
       //用户已获得授权表格
       viewablesTable: [
-        { prop: "projectName", label: "项目名称" },
-        { prop: "project_id", label: "项目ID" },
-        { prop: "address", label: "项目地址" }
+        { prop: "projectInfo[0].projectName", label: "项目名称" },
+        { prop: "userInfo[0].userName", label: "所有者" },
+        { prop: "projectInfo[0].province", label: "省份" },
+        { prop: "projectInfo[0].city", label: "县市" },
+        { prop: "projectInfo[0].address", label: "详细地址" }
       ],
       //等待用户授权表格
       authTable: [
-        { prop: "projectName", label: "项目名称" },
-        { prop: "userName", label: "申请人" },
-        { prop: "address", label: "申请日期" }
+        { prop: "projectInfo[0].projectName", label: "项目名称" },
+        { prop: "userInfo[0].userName", label: "申请人" },
+        { prop: "createdTime", label: "申请日期" },
+        { prop: "projectInfo[0].province", label: "省份" },
+        { prop: "projectInfo[0].city", label: "县市" },
+        { prop: "projectInfo[0].address", label: "详细地址" }
       ],
       //用户已开放授权表格
       authedTable: [
         { prop: "projectName", label: "项目名称" },
-        { prop: "date", label: "创建日期" },
+        { prop: "createdTime", label: "创建日期" },
         { prop: "address", label: "项目地址" }
       ],
       //标签页内用户项目部分header
@@ -279,7 +289,7 @@ export default {
       },
       //标签页内用户正在申请项目部分header
       requestHeader: {
-        title: "申请列表 ",
+        title: "正在申请列表 ",
         todo: "申请记录",
         url: "/history",
         icon: "el-icon-view",
@@ -287,7 +297,7 @@ export default {
       },
       //标签页内用户已获得授权项目部分header
       viewableHeader: {
-        title: "授权项目列表 ",
+        title: "已获授权项目 ",
         todo: "开放项目",
         url: "/list",
         icon: "el-icon-folder-opened",
@@ -298,15 +308,15 @@ export default {
       },
       //标签页内等待用户授权项目部分header
       openRequestHeader: {
-        title: "请求列表 ",
-        todo: "所有请求",
+        title: "发放授权列表 ",
+        todo: "授权记录",
         url: "/auth",
         icon: "el-icon-coordinate",
         hasQuestion: false
       },
       //标签页内用户已已开放授权项目部分header
       openHeader: {
-        title: "开放项目列表 ",
+        title: "我的开放项目 ",
         todo: "我的开放",
         url: "/myopen",
         icon: "el-icon-tickets",
@@ -356,9 +366,7 @@ export default {
       "INIT_AUTH_ABOUT_PROJECTS",
       "INIT_APPLICATION_ABOUT_PROJECTS",
       "CHANGE_LOADING",
-      "SET_ACTIVE_TAB",
-      "SET_AUTH_STATUS",
-      "SET_APPLICATION_STATUS"
+      "SET_ACTIVE_TAB"
     ]),
     formatDate(row) {
       if (row.createdTime) {
@@ -377,10 +385,40 @@ export default {
       );
     },
     toDetail(id) {
-      this.$router.push(`/project/${id}/index`);
+      this.$http.get(`project/${id}/operation`).then(res => {
+        if (res.data === true) {
+          this.$router.push(`/project/${id}/index`);
+        } else {
+          this.$message.info("管理员还未授权使用");
+        }
+      });
+    },
+    deleteProject(id) {
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$http.delete(`/project/${id}`).then(res => {
+            if (res.data === "ok") {
+              this.getProjects();
+              this.$message.success("删除成功!");
+            }
+          });
+        })
+        .catch(() => {
+          this.$message.info("已取消删除");
+        });
     },
     toViewableDetail(id) {
-      this.$router.push(`/project/${id}/show`);
+      this.$http.get(`/project/${id}/openstatus`).then(res => {
+        if (res.data === true) {
+          this.$router.push(`/project/${id}/show`);
+        } else {
+          this.$message.error("用户已停止开放项目");
+        }
+      });
     },
     toAllProjects() {
       this.$router.push("/list");
@@ -392,15 +430,14 @@ export default {
       this.$router.push(`/auth/${id}`);
     },
     logout() {
+      window.localStorage.token = "";
+      window.localStorage.userName = "";
       this.$router.push("/index");
     },
     closeWelcom() {
       this.$store.commit("CLOSE_WELCOME");
     },
     getProjects() {
-      if (this.projects.updated) {
-        return;
-      }
       this.loading.projectsLoading = true;
       this.$http.get(`project/${this.userInfo._id}/list`).then(res => {
         this.INIT_PROJECTS(res.data.projects);
@@ -408,77 +445,33 @@ export default {
       });
     },
     getApplicationProject() {
-      if (this.applicationProjects.updated) {
-        return;
-      }
       this.loading.applicationLoading = true;
-      setTimeout(() => {
-        this.INIT_APPLICATION_ABOUT_PROJECTS(applicationProjectsData);
+      this.$http.get("/apply/applys").then(res => {
+        window.console.log(res.data);
+        this.INIT_APPLICATION_ABOUT_PROJECTS(res.data);
         this.loading.applicationLoading = false;
-        this.SET_APPLICATION_STATUS();
-        //TODO:用axios获取数据，并进行初始化
-        return;
-      }, 1000);
+      });
     },
     getAuthProject() {
-      if (this.authProjects.updated) {
-        return;
-      }
       this.loading.authLoading = true;
-      setTimeout(() => {
-        this.INIT_AUTH_ABOUT_PROJECTS(authProjectsData);
+      this.$http.get("/apply/auths").then(res => {
+        this.INIT_AUTH_ABOUT_PROJECTS(res.data);
         this.loading.authLoading = false;
-        this.SET_AUTH_STATUS();
-        //TODO:用axios获取数据，并进行初始化
-      }, 1000);
-    },
-    toMyProject() {
-      alert("click");
-    },
-    toViewProject() {
-      alert("click");
+      });
     },
     showPoint() {}
   },
   created() {
     this.getProjects();
-    // this.getApplicationProject();
-    // this.getAuthProject();
   },
-  mounted() {
-    // var map = new BMap.Map("container");
-    // var localSearch = new BMap.LocalSearch(map);
-    // function searchByStationName() {
-    //   $("#result_").html(
-    //     "<tr><td>查找名称</td><td>结果名称</td><td>地址</td><td>经度</td><td>维度</td></tr>"
-    //   );
-    //   var keyword = $("#text_").val();
-    //   var list = keyword.split(",");
-    //   for (var i = 0; i < list.length; i++) {
-    //     map.clearOverlays(); //清空原来的标注
-    //     localSearch.setSearchCompleteCallback(function(searchResult) {
-    //       var poi = searchResult.getPoi(0);
-    //       var html = "";
-    //       if (poi) {
-    //         html += "<tr><td>" + searchResult.keyword;
-    //         html += "</td><td>" + poi.title;
-    //         html += "</td><td>" + poi.address;
-    //         html += "</td><td>" + poi.point.lng;
-    //         html += "</td><td>" + poi.point.lat + "</td></tr>";
-    //       }
-    //       $("#result_").append(html);
-    //     });
-    //     localSearch.search(list[i]);
-    //   }
-    // }
-  }
+  mounted() {}
 };
 </script>
 
 <style lang="scss" scoped>
 .nav {
-  height: 4em;
-  line-height: 4em;
+  height: 3em;
+  line-height: 3em;
   border-bottom: 1px solid #e4e7ed;
   .logo {
     font-size: 20px;
@@ -489,14 +482,14 @@ export default {
     font-size: 14px;
   }
 }
-
 .main-content {
+  padding: 10px 20px;
   width: 100%;
   min-height: 100vh;
   .welcome {
     font-size: 14px;
-    height: 3em;
-    line-height: 3em;
+    height: 2em;
+    line-height: 2em;
     text-align: center;
     border: 1px solid rgb(228, 248, 219);
     color: #67c23a;
@@ -516,14 +509,11 @@ export default {
   }
   .map {
     width: 100%;
-    height: 300px;
+    height: 500px;
     margin: 20px 0;
-    // border: 1px solid red;
     border-radius: 5px;
   }
   .project {
-    // border: 1px solid #67c23a;
-    // border-radius: 5px;
     margin: 20px 0;
     padding: 10px 10px 40px;
     .user-onfo {

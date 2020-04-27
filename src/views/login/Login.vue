@@ -100,8 +100,8 @@ export default {
     return {
       header: { menu: "登录", toPageName: "取消登录", to: "/index" },
       model: {
-        phone: "15752084956",
-        password: "12345678"
+        phone: "",
+        password: ""
       },
       userIcon: "el-icon-loading",
       passwordIcon: "el-icon-loading",

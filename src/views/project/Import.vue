@@ -1,5 +1,12 @@
 <template>
   <div>
+    <el-alert
+      v-if="projectInfo.obj"
+      class="info"
+      title="你已上传文件，点击下方按钮即可重新上传。"
+      type="info"
+      show-icon
+    ></el-alert>
     <el-upload
       :limit="1"
       :on-exceed="handleExceed"
@@ -27,7 +34,7 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -36,6 +43,9 @@ export default {
       objlist: [],
       mtllist: []
     };
+  },
+  computed: {
+    ...mapState(["projectInfo"])
   },
   methods: {
     ...mapMutations(["INIT_CURRENT_PROJECT_INFO"]),
@@ -77,5 +87,8 @@ export default {
 }
 .upload-demo {
   margin-bottom: 20px;
+}
+.info {
+  margin: 0 0 10px 0;
 }
 </style>

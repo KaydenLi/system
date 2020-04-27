@@ -12,23 +12,26 @@
         >
           <p>
             <span class="title">申请者：</span>
-            <span @click="checkUser(auth.project_id)" class="link">{{auth.userName}}</span>
+            <span @click="checkUser(auth.owner_id)" class="link">{{auth.userInfo[0].userName}}</span>
           </p>
           <p>
             <span class="title">项目名称：</span>
-            <span @click="checkProject(auth.project_id)" class="link">{{auth.projectName}}</span>
+            <span
+              @click="checkProject(auth.project_id)"
+              class="link"
+            >{{auth.projectInfo[0].projectName}}</span>
           </p>
           <p>
             <span class="title">项目地址：</span>
-            {{auth.address}}
+            {{auth.projectInfo[0].province+" "+auth.projectInfo[0].city+" "+auth.projectInfo[0].address}}
           </p>
           <p>
             <span class="title">状态：</span>
-            {{auth.status}}
+            {{status}}
           </p>
           <p>
             <span class="title">申请日期：</span>
-            {{auth.date}}
+            {{auth.createdTime}}
           </p>
           <p>
             <span class="title">申请理由：</span>
@@ -49,19 +52,29 @@ export default {
     return {
       header: { menu: "授权详情", toPageName: "返回首页", to: "/" },
       auth: {
-        _id: "0001",
-        user_id: "0002",
-        userName: "kaydenJobs",
-        project_id: "1",
-        address: "wuhan hust",
-        projectName: "待开放授权项目1",
-        title: "申请项目授权",
-        date: "2020-02-02",
-        status: "waitting",
-        authdate: "",
-        description: "测试-申请理由。"
+        // _id: "0001",
+        // user_id: "0002",
+        // userName: "kaydenJobs",
+        // project_id: "1",
+        // address: "wuhan hust",
+        // projectName: "待开放授权项目1",
+        // title: "申请项目授权",
+        // date: "2020-02-02",
+        // status: "waitting",
+        // authdate: "",
+        // description: "测试-申请理由。"
       }
     };
+  },
+  computed: {
+    status: function() {
+      let st = this.auth.status;
+      if ( st=== "WAIT") {
+        return "等待授权";
+      }else {
+        return "error"
+      }
+    }
   },
   methods: {
     checkUser(id) {
@@ -71,39 +84,36 @@ export default {
       this.$router.push(`/project/${id}`);
     },
     cancelQuest(id) {
-      window.console.log("拒绝" + id);
       this.$confirm("确定拒绝该申请吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "已拒绝该申请!"
+          this.$http.get(`apply/rejectrequest/${id}`).then(res => {
+            if (res.data === "ok") {
+              this.$message.success("已拒绝该申请!");
+              this.$router.push("/");
+            }
           });
-          this.$router.push("/");
         })
         .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消"
-          });
+          this.$message.info("已取消");
         });
     },
     acquireQuest(id) {
-      window.console.log("拒绝" + id);
       this.$confirm("确定同意该申请吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "已同意该申请!"
+          this.$http.get(`apply/acquirequest/${id}`).then(res => {
+            if (res.data === "ok") {
+              this.$message.success("已同意该申请!");
+              this.$router.push("/");
+            }
           });
-          this.$router.push("/");
         })
         .catch(() => {
           this.$message({
@@ -112,6 +122,12 @@ export default {
           });
         });
     }
+  },
+  created() {
+    this.$http.get(`apply/detail/${this.$route.params.id}`).then(res => {
+      window.console.log(res.data[0]);
+      this.auth = res.data[0];
+    });
   }
 };
 </script>

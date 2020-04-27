@@ -40,6 +40,7 @@
       <el-table-column prop="name" label="测点"></el-table-column>
       <el-table-column prop="type" :filters="types" :filter-method="filterTypes" label="类型"></el-table-column>
       <el-table-column prop="value" sortable label="当前值"></el-table-column>
+      <el-table-column prop="position" label="坐标"></el-table-column>
       <el-table-column prop="unit" label="单位"></el-table-column>
       <el-table-column prop="ratio" label="系数"></el-table-column>
       <el-table-column
@@ -122,6 +123,7 @@ export default {
             data.unit = points.unit;
             data.value = points.value[0];
             data.group = points.group;
+            data.position = points.position;
             data.site = site;
             data.machineinfo = machineinfo;
             data.plane = plane;

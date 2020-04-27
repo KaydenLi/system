@@ -12,7 +12,6 @@ import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
-      publicPath: process.env.BASE_URL,
       camera: null,
       scene: null,
       renderer: null,
@@ -112,14 +111,6 @@ export default {
       // 导入文件
       let mtlLoader = new MTLLoader();
       let objLoader = new OBJLoader();
-      // mtlLoader.load(`${this.publicPath}model/${this.mtl}`, materials => {
-      //   materials.preload();
-      //   objLoader.setMaterials(materials);
-      //   objLoader.load(`${this.publicPath}model/${this.obj}`, object => {
-      //     object.position.set(0, 0, 0);
-      //     this.scene.add(object);
-      //   });
-      // });
       mtlLoader.load(`${this.projectInfo.mtl}`, materials => {
         materials.preload();
         objLoader.setMaterials(materials);
@@ -136,7 +127,6 @@ export default {
     },
 
     initThreeClickEvent() {
-      window.console.log("点击事件");
       var raycaster = new THREE.Raycaster();
       var mouse = new THREE.Vector2();
       document

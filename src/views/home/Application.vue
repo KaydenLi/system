@@ -12,19 +12,25 @@
         >
           <p>
             <span class="title">项目名称：</span>
-            <span @click="checkProject(quest.project_id)" class="link">{{quest.projectName}}</span>
+            <span
+              @click="checkProject(quest.projectInfo[0].project_id)"
+              class="link"
+            >{{quest.projectInfo[0].projectName}}</span>
           </p>
           <p>
             <span class="title">所有者：</span>
-            <span @click="checkUser(quest.project_id)" class="link">{{quest.userName}}</span>
+            <span
+              @click="checkUser(quest.userInfo[0].userName)"
+              class="link"
+            >{{quest.userInfo[0].userName}}</span>
           </p>
           <p>
             <span class="title">项目地址：</span>
-            {{quest.address}}
+            {{quest.projectInfo[0].province+" "+quest.projectInfo[0].city+" "+quest.projectInfo[0].address}}
           </p>
           <p>
             <span class="title">申请日期：</span>
-            {{quest.date}}
+            {{quest.createdTime}}
           </p>
           <p>
             <span class="title">申请理由：</span>
@@ -43,18 +49,7 @@ export default {
   data() {
     return {
       header: { menu: "申请内容", toPageName: "返回首页", to: "/" },
-      quest: {
-        _id: "01",
-        user_id: "0002",
-        userName: "kayden",
-        project_id: "1",
-        address: "湖北省武汉市洪山区华中科技大学",
-        projectName: "某教学楼",
-        date: "2020-02-02",
-        status: "waitting",
-        authdate: "",
-        description: "申请用于项目建设期的安全监测和使用期的健康管理。"
-      }
+      quest: {}
     };
   },
   methods: {
@@ -66,29 +61,27 @@ export default {
     },
     cancelQuest(id) {
       //TODO:数据库操作
-      window.console.log("接受" + id);
       this.$confirm("确定取消该申请吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "已取消该申请!"
+          this.$http.get(`/apply/cancelrequest/${id}`).then(res => {
+            if (res.data === "ok") this.$message.success("已取消该申请!");
+            this.$router.push(`/`);
           });
-          this.$router.push(`/`);
         })
         .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消"
-          });
+          this.$message.info("已取消");
         });
     }
   },
   created() {
-    //TODO:根据ID获取具体请求的数据
+    this.$http.get(`apply/applydetail/${this.$route.params.id}`).then(res => {
+      this.quest = res.data[0];
+      window.console.log(res.data[0]);
+    });
   }
 };
 </script>

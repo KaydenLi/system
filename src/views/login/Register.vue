@@ -68,11 +68,11 @@ export default {
     return {
       header: { menu: "注册账号", toPageName: "去登陆", to: "/login" },
       model: {
-        nickName: "kaydenli",
-        userPassword: "12345678",
-        acknowledgement: "12345678",
-        phone: "15752084956",
-        verificationCode: "1234"
+        nickName: "",
+        userPassword: "",
+        acknowledgement: "",
+        phone: "",
+        verificationCode: "0000"
       },
       rules: {
         nickName: [
@@ -100,7 +100,7 @@ export default {
   },
   methods: {
     getVerificationCode() {
-      alert("获取验证码");
+      alert("当前未设置验证码验证，请忽略");
     },
     createUser(rules) {
       this.$refs[rules].validate(valid => {
@@ -129,7 +129,7 @@ export default {
           });
         } else {
           this.$message({
-            message: "创建用户失败，请稍后再试!",
+            message: "信息验证失败，请修改后再试!",
             type: "info"
           });
         }

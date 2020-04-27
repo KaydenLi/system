@@ -68,7 +68,7 @@
       </div>
     </div>
 
-    <el-dialog title="添加项目当前信息" :visible.sync="dialogTableVisible" width="40%">
+    <el-dialog title="添加项目当前信息" :visible.sync="dialogTableVisible" width="40%" top="20px">
       <el-form :model="itemForm">
         <el-form-item label="信息项名称" label-width="6em">
           <el-input v-model="itemForm.name" autocomplete="off"></el-input>
@@ -90,7 +90,7 @@
         <el-button type="primary" @click="dialogTableVisible = false;addInfo()">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="修改项目当前信息" :visible.sync="dialogEditInfoVisible" width="40%">
+    <el-dialog title="修改项目当前信息" :visible.sync="dialogEditInfoVisible" width="40%" top="20px">
       <el-form :model="editInfoForm">
         <el-form-item label="信息项名称" label-width="6em">
           <el-input v-model="editInfoForm.name" autocomplete="off"></el-input>
@@ -112,7 +112,7 @@
         <el-button type="primary" @click="dialogEditInfoVisible = false;updateInfo()">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="修改项目基本信息" :visible.sync="dialogEditVisible" width="40%">
+    <el-dialog title="修改项目基本信息" :visible.sync="dialogEditVisible" width="40%" top="20px">
       <el-form :model="updateForm">
         <el-form-item label="项目名称" label-width="6em">
           <el-input v-model="updateForm.projectName" autocomplete="off"></el-input>
@@ -169,11 +169,14 @@ export default {
         img: ""
       },
       editInfoForm: {},
-      openStatusValue: "不开放"
+      openStatusValue: ""
     };
   },
   computed: {
-    ...mapState(["projectInfo"])
+    ...mapState(["projectInfo"]),
+    // openStatusValue: function() {
+    //   return this.updateForm.openStatus === false ? "不开放" : "开放";
+    // }
   },
   components: {},
   methods: {

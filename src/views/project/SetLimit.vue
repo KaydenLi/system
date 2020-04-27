@@ -17,6 +17,7 @@
       :data="tableData"
       border
       stripe
+      :row-class-name="tableRowClassName"
       :row-style="{height:0+'px'}"
       :cell-style="{padding:4+'px'}"
     >
@@ -25,15 +26,12 @@
       <el-table-column prop="name" label="测点"></el-table-column>
       <el-table-column prop="value" sortable label="当前值"></el-table-column>
       <el-table-column prop="threshold" label="阈值"></el-table-column>
+      <el-table-column prop="initialError" label="设备初值"></el-table-column>
       <el-table-column prop="unit" label="单位"></el-table-column>
       <el-table-column prop="over" :filters="over" :filter-method="filterLimit" label="超值与否"></el-table-column>
       <el-table-column fixed="right" label="修改阈值" width="120">
         <template slot-scope="scope">
-          <el-button
-            @click.native.prevent="editLimit(scope.row.threshold,scope.row._id)"
-            type="text"
-            size="small"
-          >修改</el-button>
+          <el-button @click.native.prevent="editLimit(scope.row)" type="text" size="small">修改</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -42,7 +40,6 @@
 
 <script>
 //MOCKDATA
-import { planes } from "../../mockData/plane.js";
 export default {
   data() {
     return {
@@ -66,7 +63,8 @@ export default {
       over: [
         { text: "是", value: "是" },
         { text: "否", value: "否" }
-      ]
+      ],
+      form: {}
     };
   },
   methods: {
@@ -87,11 +85,13 @@ export default {
       data.forEach(planes => {
         if (planes.length === 0) return;
         let plane = planes.name;
+        let planeId = planes._id;
         if (this.selectPlanes.indexOf(plane) === -1)
           this.planes.push({ text: plane, value: plane });
         planes.children.forEach(sites => {
           if (sites.length === 0) return;
           let site = sites.name;
+          let siteId = sites._id;
           if (this.selectSites.indexOf(site) === -1)
             this.sites.push({ text: site, value: site });
           sites.value.forEach(points => {
@@ -99,11 +99,17 @@ export default {
             let data = {};
             data.plane = plane;
             data.site = site;
-            data._id = points._id;
+            data.pointId = points._id;
+            data.planeId = planeId;
+            data.siteId = siteId;
             data.name = points.name;
+            data.notes = points.notes;
+            data.threshold = points.threshold;
+            data.position = points.position;
             data.unit = points.unit;
             data.value = points.value[0];
-            data.threshold = points.threshold;
+            data.type = points.type;
+            data.group = points.group;
             data.over =
               parseInt(points.threshold) - parseInt(points.initialError) <
               parseInt(points.value)
@@ -115,33 +121,49 @@ export default {
           });
         });
       });
-      window.console.log(this.overNumber);
-      window.console.log(this.count);
       this.percent =
         parseInt((parseInt(this.overNumber) / parseInt(this.count)) * 100) +
         "%";
     },
-    editLimit(val, point) {
+    editLimit(row) {
       this.$prompt("请输入新阈值", "提示", {
         confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        inputValue: val
+        cancelButtonText: "取消"
+        // inputValue: val
       })
         .then(({ value }) => {
-          this.tableData.forEach(points => {
-            if (points._id === point) {
-              points.threshold = value;
-            }
-          });
-          this.$message.success("已设置新阈值为 " + value);
+          this.form = row;
+          this.form.threshold = value;
+          window.console.log(this.form);
+
+          this.$http
+            .post(
+              `/project/${this.$route.params.id}/editpoint/${row.planeId}/${row.siteId}/${row.pointId}`,
+              this.form
+            )
+            .then(res => {
+              this.initTableData(res.data);
+              this.$message.success("阈值已更新为" + value);
+            });
         })
         .catch(() => {
           this.$message.info("已取消输入新阈值");
         });
+    },
+    tableRowClassName({ row }) {
+      if (row.value == null) {
+        return;
+      }
+      if (row.threshold + row.initialError - row.value[0] <= 0) {
+        return "warning-row";
+      }
+      return "";
     }
   },
   created() {
-    this.initTableData(planes);
+    this.$http.get(`/project/${this.$route.params.id}/sensor`).then(res => {
+      this.initTableData(res.data);
+    });
   }
 };
 </script>
@@ -166,5 +188,8 @@ export default {
 }
 .el-table .success-row {
   background: #000;
+}
+.el-table .warning-row {
+  background: oldlace;
 }
 </style>

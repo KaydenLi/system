@@ -41,7 +41,7 @@
               ></el-input>
             </el-form-item>
             <el-form-item size="large">
-              <el-button type="primary" @click="(createProject('rules'))">立即创建</el-button>
+              <el-button type="primary" @click="(createProject('rules'))">申请创建</el-button>
             </el-form-item>
           </el-form>
           <p style="color:#909399;font-size:14px;">
@@ -50,7 +50,7 @@
             <strong>主页</strong>=>
             <strong>我的项目</strong>=>
             <strong>详情</strong>=>
-            <strong>项目管理</strong>&nbsp;页面进行详细配置、进行更多操作。
+            <strong>项目构建</strong>&nbsp;页面进行详细配置、进行更多操作。
           </p>
         </el-col>
       </el-row>
@@ -137,7 +137,7 @@ export default {
           this.model.createdTime = date;
           this.model.projectName = this.model.projectName.trim();
           this.$http.post("project/create", this.model).then(res => {
-            this.$message.success(`新建项目${res.data.projectName}`);
+            this.$message.success(`新建项目${res.data.projectName}成功，等待管理员授权后即可使用`);
           });
         } else {
           return false;

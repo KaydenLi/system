@@ -35,7 +35,7 @@
               <el-input v-model="model.acknowledgement" clearable type="password"></el-input>
             </el-form-item>
             <el-form-item size="large">
-              <el-button type="primary" @click="(changePassword('rules'))">更改</el-button>
+              <el-button type="primary" @click="(changePassword('rules'))" disabled>更改</el-button>
               <el-button @click="cancelCreate">取消</el-button>
             </el-form-item>
           </el-form>
