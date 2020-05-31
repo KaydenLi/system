@@ -28,7 +28,7 @@ export default {
 <style scoped>
 .divder {
   margin: 20px;
-  border-bottom: 1px solid #dcdfe6;
+  border-bottom: 1px solid #DCDFE6;
   padding: 0 0 15px 0;
 }
 .menu-back-btn {

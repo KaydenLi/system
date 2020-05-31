@@ -23,9 +23,9 @@
           <el-col
             :xs="{span: 24, offset: 0}"
             :sm="{span: 18, offset: 3}"
-            :md="{span: 20, offset: 2}"
-            :lg="{span: 20, offset: 2}"
-            :xl="{span: 20, offset: 2}"
+            :md="{span: 22, offset: 1}"
+            :lg="{span: 22, offset: 1}"
+            :xl="{span: 22, offset: 1}"
           >
             <!-- 测站信息 -->
             <div v-for="(item,index2) in module.children" :key="item._id" class="tree">
@@ -220,7 +220,7 @@
       </div>
     </el-dialog>
     <!-- 修改测区dialog -->
-    <el-dialog title="修改测区" width="40%" top="1em" :visible.sync="editPlaneVisible">
+    <el-dialog title="编辑测区" width="40%" top="1em" :visible.sync="editPlaneVisible">
       <el-form :model="editPlaneForm" label-position="left">
         <el-form-item label="测区名称" label-width="80px">
           <el-input v-model="editPlaneForm.name"></el-input>
@@ -257,7 +257,7 @@
       </div>
     </el-dialog>
     <!-- 修改测点dialog -->
-    <el-dialog title="修改测点" width="40%" top="1em" :visible.sync="editPointVisible">
+    <el-dialog title="编辑测点" width="40%" top="1em" :visible.sync="editPointVisible">
       <el-form :model="editPointForm" label-position="left">
         <el-form-item label="测点名称" label-width="80px">
           <el-input v-model="editPointForm.name"></el-input>
@@ -854,7 +854,7 @@ export default {
 .block {
   margin: 0 auto;
   width: 400px;
-  height: 300px;
+  // height: 300px;
   overflow: hidden;
 }
 .tree {

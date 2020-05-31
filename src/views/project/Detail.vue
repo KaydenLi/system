@@ -52,9 +52,6 @@
               <i class="el-icon-bell"></i>
               <span class="menu-title">评估与预警</span>
             </template>
-            <el-menu-item index="setlimit">
-              <i class="menu-item-icon el-icon-minus"></i>阈值设定
-            </el-menu-item>
             <el-menu-item index="estimation">
               <i class="menu-item-icon el-icon-minus"></i>综合阈值法评估
             </el-menu-item>
@@ -167,7 +164,7 @@ export default {
     .content-header {
       line-height: 30px;
       text-align: center;
-      border-bottom: 1px solid #e4e7ed;
+      border-bottom: 2px solid #DCDFE6;
       .el-icon-s-grid {
         float: left;
         line-height: 30px;

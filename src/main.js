@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './plugins/element.js'
+// import './element-variables.scss'
 import 'default-passive-events'
 
 //注册header和footer两个全局组件
@@ -40,7 +41,7 @@ Vue.prototype.$http.interceptors.response.use(res => {
   }
   //根据状态码进行处理
   if (err.response.status === 422) {
-    //401，未登录，路由到登录页面
+    //422，权限不足，路由到用户主页
     router.push('/')
   }
   return Promise.reject(err)

@@ -30,6 +30,11 @@
           <span>{{projectInfo.structuralType}}</span>
         </div>
         <div class="project-item">
+          <i class="el-icon-s-operation"></i>
+          <span class="item-title">安全等级：</span>
+          <span>{{projectInfo.estimationInfo.statusLevel}}</span>
+        </div>
+        <div class="project-item">
           <i class="el-icon-view"></i>
           <span class="item-title">开放状态：</span>
           <span>{{projectInfo.openStatus===false?"未开放":"已开放"}}</span>
@@ -173,7 +178,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["projectInfo"]),
+    ...mapState(["projectInfo"])
     // openStatusValue: function() {
     //   return this.updateForm.openStatus === false ? "不开放" : "开放";
     // }
@@ -269,6 +274,7 @@ export default {
       this.INIT_CURRENT_PROJECT_INFO(res.data);
       this.baseInfo = this.projectInfo.baseInfo;
       this.updateForm.projectName = this.projectInfo.projectName;
+      this.updateForm.estimationInfo = this.projectInfo.estimationInfo;
       this.updateForm.province = this.projectInfo.province;
       this.updateForm.city = this.projectInfo.city;
       this.updateForm.address = this.projectInfo.address;
@@ -286,6 +292,7 @@ export default {
   margin-bottom: 20px;
   border-bottom: 1px solid #e4e7ed;
   .project-edit {
+    text-align: center;
     vertical-align: top;
     display: inline-block;
     padding: 20px;
@@ -362,13 +369,13 @@ export default {
   .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
-    width: 400px;
+    width: 600px;
     height: 300px;
     line-height: 300px;
     text-align: center;
   }
   .avatar {
-    width: 400px;
+    width: 600px;
     height: 300px;
     display: block;
   }

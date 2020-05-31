@@ -1,6 +1,17 @@
 <template>
   <div>
-    <siteHeader :header="header"></siteHeader>
+    <!-- <el-row>
+      <el-col
+        :xs="{span: 24, offset: 0}"
+        :sm="{span: 16, offset: 4}"
+        :md="{span: 16, offset: 4}"
+        :lg="{span: 12, offset: 6}"
+        :xl="{span: 8, offset: 8}"
+      > -->
+        <siteHeader :header="header"></siteHeader>
+      <!-- </el-col>
+    </el-row> -->
+
     <el-main>
       <el-row>
         <el-col
@@ -15,6 +26,10 @@
               v-if="!notes.length"
               style="color:#C0C4CC;text-align:center;margin-top:10em;"
             >还没有任何公告！</div>
+            <div
+              v-else
+              style="color:#C0C4CC;text-align:center;margin:0 0 10px 0;"
+            >当前有{{notes.length}}条公告</div>
             <el-timeline>
               <el-timeline-item
                 v-for="note in notes"

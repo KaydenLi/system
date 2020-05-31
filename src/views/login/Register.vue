@@ -72,7 +72,7 @@ export default {
         userPassword: "",
         acknowledgement: "",
         phone: "",
-        verificationCode: "0000"
+        verificationCode: ""
       },
       rules: {
         nickName: [

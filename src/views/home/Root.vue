@@ -1,27 +1,27 @@
 <template>
   <div>
-    <!-- header部分 -->
-    <el-header>
-      <div class="nav">
-        <span class="logo">结构三维可视化监测系统&nbsp;</span>
-        <div class="float-right">
-          <el-button size="small" @click="logout" type="primary">
-            <i class="el-icon-bell"></i>
-            退出登录
-          </el-button>&nbsp;
-        </div>
-      </div>
-    </el-header>
+    <el-row>
+      <el-col
+        :xs="{span: 24, offset: 0}"
+        :sm="{span: 18, offset: 3}"
+        :md="{span: 20, offset: 2}"
+        :lg="{span: 20, offset: 2}"
+        :xl="{span: 18, offset: 3}"
+      >
+        <!-- header部分 -->
+        <el-header>
+          <div class="nav">
+            <span class="logo">结构三维可视化监测系统&nbsp;</span>
+            <div class="float-right">
+              <el-button size="small" @click="logout" type="primary">
+                <i class="el-icon-bell"></i>
+                退出登录
+              </el-button>&nbsp;
+            </div>
+          </div>
+        </el-header>
 
-    <el-main class="main-content">
-      <el-row>
-        <el-col
-          :xs="{span: 24, offset: 0}"
-          :sm="{span: 18, offset: 3}"
-          :md="{span: 20, offset: 2}"
-          :lg="{span: 20, offset: 2}"
-          :xl="{span: 18, offset: 3}"
-        >
+        <el-main class="main-content">
           <div v-if="userInfo.welcomeFlag" class="welcome">
             {{userInfo.userName}}，你好。欢迎使用结构三维可视化监测系统！
             <i
@@ -218,12 +218,12 @@
               <User :userInfo="userInfo"></User>
             </el-tab-pane>
           </el-tabs>
-        </el-col>
-      </el-row>
-    </el-main>
+        </el-main>
 
-    <!-- footer部分 -->
-    <siteFooter></siteFooter>
+        <!-- footer部分 -->
+        <siteFooter></siteFooter>
+      </el-col>
+    </el-row>
   </div>
 </template>
 

@@ -146,31 +146,31 @@ export default {
       this.renderer.clippingPlanes = [this.globalPlanes]; // 显示剖面
       this.renderer.localClippingEnabled = true;
     },
-    initThreeClickEvent(clickObjects) {
-      let raycaster = new THREE.Raycaster();
-      let mouse = new THREE.Vector2();
-      document
-        .getElementById("container")
-        .addEventListener("mousedown", onDocumentMouseDown, false);
-      function onDocumentMouseDown(event) {
-        let intersects = [];
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse, this.camera);
-        intersects = raycaster.intersectObjects(clickObjects);
-        if (intersects.length > 0) {
-          for (let i = 0; i < intersects.length; i++) {
-            window.console.log(intersects[i].object.info.position);
-          }
-        }
-      }
-    },
-    changeClips(array) {
-      this.$set(this.vector, "x", array[0]);
-      this.$set(this.vector, "y", array[1]);
-      this.$set(this.vector, "z", array[2]);
-      window.console.log(this.vector);
-    },
+    // initThreeClickEvent(clickObjects) {
+    //   let raycaster = new THREE.Raycaster();
+    //   let mouse = new THREE.Vector2();
+    //   document
+    //     .getElementById("container")
+    //     .addEventListener("mousedown", onDocumentMouseDown, false);
+    //   function onDocumentMouseDown(event) {
+    //     let intersects = [];
+    //     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    //     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    //     raycaster.setFromCamera(mouse, this.camera);
+    //     intersects = raycaster.intersectObjects(clickObjects);
+    //     if (intersects.length > 0) {
+    //       for (let i = 0; i < intersects.length; i++) {
+    //         window.console.log(intersects[i].object.info.position);
+    //       }
+    //     }
+    //   }
+    // },
+    // changeClips(array) {
+    //   this.$set(this.vector, "x", array[0]);
+    //   this.$set(this.vector, "y", array[1]);
+    //   this.$set(this.vector, "z", array[2]);
+    //   window.console.log(this.vector);
+    // },
     async initThree(element) {
       await this.initRenderer(element);
       await this.initScene();
@@ -181,7 +181,7 @@ export default {
       await this.initClipPlanes(this.guiControls);
       await this.initObj();
       await this.initSensor();
-      await this.initThreeClickEvent(this.clickObjects);
+      // await this.initThreeClickEvent(this.clickObjects);
       await this.initControl();
     },
     animate() {

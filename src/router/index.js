@@ -170,12 +170,6 @@ const routes = [
             component: () => import('../views/project/Import.vue')
           },
           {
-            //设置限值页面
-            path: 'setlimit',
-            name: 'estimatsetlimition',
-            component: () => import('../views/project/SetLimit.vue')
-          },
-          {
             //剩余寿命评估页面
             path: 'lifemethod',
             name: 'lifemethod',

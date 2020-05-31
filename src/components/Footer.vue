@@ -11,8 +11,8 @@ export default {};
 
 <style scoped>
 .footer {
-  margin: 20px 20px 0;
-  border-top: 1px solid #e4e7ed;
+  margin: 20px 0;
+  border-top: 1px solid #DCDFE6;
   text-align: center;
   font-size: 14px;
   color: #909399;
