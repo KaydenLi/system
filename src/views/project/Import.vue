@@ -56,7 +56,6 @@ export default {
       this.$http
         .post(`/project/${this.$route.params.id}/updatemodel`, model)
         .then(res => {
-          window.console.log(res.data);
           this.INIT_CURRENT_PROJECT_INFO(res.data);
           this.$refs.uploadmtl.clearFiles();
           this.$refs.uploadobj.clearFiles();
