@@ -19,7 +19,7 @@
     "jszip": "^3.4.0",
     "jszip-utils": "^0.1.0",
     "pizzip": "^3.0.6",
-    "three": "^0.114.0",
+    "three": "^0.125.0",
     "three-obj-mtl-loader": "^1.0.3",
     "three-orbitcontrols": "^2.110.3",
     "vue": "^2.6.10",
